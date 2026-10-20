@@ -1,0 +1,54 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import ClassCard from '../components/ClassCard.astro';
+import { pages, site } from '../data/site';
+import { balletGuide, classes, disclaimer, hipHopGuide } from '../data/classes';
+
+const early = classes.slice(0, 4);
+const ballet = classes.filter((item) => item.id.includes('ballet') || item.id.includes('jazz-tap'));
+const hipHop = classes.filter((item) => item.id.includes('hip-hop'));
+const rest = classes.filter((item) => !early.includes(item) && !ballet.includes(item) && !hipHop.includes(item));
+---
+
+<Base title={pages.classes.title} description={pages.classes.description} canonical="/classes.html">
+  <Hero slot="hero" icon="person-running" image="/images/hero/stage-green.jpg" focus="center" />
+  <section class="section">
+    <div class="container">
+      <h1 class="center">
+        <span class="fs-32">Class schedule</span><br />
+        <span class="fs-18 tone-soft">2026–2027</span>
+      </h1>
+      <ul class="fact-list fact-list-center">
+        <li><i class="fa-solid fa-clipboard-check icon" aria-hidden="true"></i>{site.season}</li>
+        <li><i class="fa-solid fa-calendar-days icon" aria-hidden="true"></i>{site.seasonStart}</li>
+      </ul>
+      <p class="note copy"><i class="fa-solid fa-circle-info icon" aria-hidden="true"></i>{disclaimer}</p>
+      <div class="class-grid">
+        {early.map((item) => <ClassCard item={item} register />)}
+      </div>
+      <h2>Ballet, jazz, and tap</h2>
+      <p class="copy">{balletGuide}</p>
+      <div class="class-grid">
+        {ballet.map((item) => <ClassCard item={item} register />)}
+      </div>
+      <h2>Hip hop</h2>
+      <p class="copy">{hipHopGuide}</p>
+      <div class="class-grid">
+        {hipHop.map((item) => <ClassCard item={item} register />)}
+      </div>
+      <div class="class-grid">
+        {rest.map((item) => <ClassCard item={item} register />)}
+      </div>
+      <div class="schedule-pair">
+        <figure>
+          <img src="/images/schedule/class-schedule.png" alt="Seaside Dance Academy 2026-2027 class schedule" width="618" height="800" />
+        </figure>
+        <figure>
+          <img src="/images/schedule/pom-classes.png" alt="Junior Pom and Pom and Dance Team Prep" width="618" height="800" />
+        </figure>
+      </div>
+      <p class="center"><a class="btn" href="/registration.html"><span><i class="fa-solid fa-clipboard-list icon" aria-hidden="true"></i>Register</span></a></p>
+    </div>
+  </section>
+</Base>

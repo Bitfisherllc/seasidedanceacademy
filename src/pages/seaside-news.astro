@@ -1,0 +1,124 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import { newsPosts } from '../data/news';
+import { pages, site } from '../data/site';
+
+const posts = [...newsPosts].sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
+---
+
+<Base title={pages.news.title} description={pages.news.description} canonical="/seaside-news.html">
+  <Hero slot="hero" icon="newspaper" image="/images/hero/stage-lilac.jpg" focus="center" />
+  <section class="section">
+    <div class="container">
+      <h1 class="center">
+        <span class="fs-32">Seaside News</span>
+      </h1>
+      <p class="copy center trust-lead">Like us on Facebook to stay up to date on all the exciting things happening at Seaside!</p>
+      <p class="copy center">You need a Facebook account to read the full news articles.</p>
+      <div class="news-list" data-news-list>
+        {posts.map((post) => (
+          <article class="news-post">
+            <span class="news-photo">
+              <img src={post.image} alt="" width="960" height="540" loading="lazy" />
+              <i class="fa-solid fa-play album-play" aria-hidden="true"></i>
+            </span>
+            {post.date && (
+              <span class="news-meta">
+                <span><i class="fa-solid fa-calendar-days icon" aria-hidden="true"></i>{post.date}</span>
+              </span>
+            )}
+            {post.text && <span class="news-copy">{post.text}</span>}
+            <a class="btn news-facebook" href={post.href} target="_blank" rel="noopener noreferrer">
+              <span><i class="fa-brands fa-facebook icon" aria-hidden="true"></i>View on Facebook</span>
+            </a>
+          </article>
+        ))}
+      </div>
+      <p class="center"><a class="btn" href={site.facebook} target="_blank" rel="noopener noreferrer"><span><i class="fa-brands fa-facebook icon" aria-hidden="true"></i>View all Facebook news</span></a></p>
+    </div>
+  </section>
+</Base>
+
+<script define:vars={{ saved: newsPosts }}>
+  const list = document.querySelector('[data-news-list]');
+
+  function idFrom(href) {
+    const match = String(href || '').match(/\/reel\/(\d+)/);
+    return match ? match[1] : '';
+  }
+
+  function posted(post) {
+    const value = Date.parse(post.date || '');
+    return Number.isNaN(value) ? 0 : value;
+  }
+
+  function card(post) {
+    const article = document.createElement('article');
+    article.className = 'news-post';
+    const photo = document.createElement('span');
+    photo.className = 'news-photo';
+    const image = document.createElement('img');
+    image.src = post.image;
+    image.alt = '';
+    image.width = 960;
+    image.height = 540;
+    image.loading = 'lazy';
+    const icon = document.createElement('i');
+    icon.className = 'fa-solid fa-play album-play';
+    icon.setAttribute('aria-hidden', 'true');
+    photo.append(image, icon);
+    article.append(photo);
+    const details = [
+      post.date && ['calendar-days', post.date],
+      post.length && ['clock', post.length],
+      post.views && ['eye', post.views],
+    ].filter(Boolean);
+    if (details.length) {
+      const meta = document.createElement('span');
+      meta.className = 'news-meta';
+      details.forEach(([iconName, text]) => {
+        const item = document.createElement('span');
+        const icon = document.createElement('i');
+        icon.className = `fa-solid fa-${iconName} icon`;
+        icon.setAttribute('aria-hidden', 'true');
+        item.append(icon, document.createTextNode(text));
+        meta.append(item);
+      });
+      article.append(meta);
+    }
+    if (post.text) {
+      const copy = document.createElement('span');
+      copy.className = 'news-copy';
+      copy.textContent = post.text;
+      article.append(copy);
+    }
+    const source = document.createElement('a');
+    source.className = 'btn news-facebook';
+    source.href = post.href;
+    source.target = '_blank';
+    source.rel = 'noopener noreferrer';
+    const label = document.createElement('span');
+    const brand = document.createElement('i');
+    brand.className = 'fa-brands fa-facebook icon';
+    brand.setAttribute('aria-hidden', 'true');
+    label.append(brand, document.createTextNode('View on Facebook'));
+    source.append(label);
+    article.append(source);
+    return article;
+  }
+
+  const savedPosts = saved.map((post) => ({ ...post, id: idFrom(post.href) }));
+
+  fetch('/api/facebook')
+    .then((response) => (response.ok ? response.json() : null))
+    .then((data) => {
+      const live = Array.isArray(data?.posts) ? data.posts : [];
+      if (!live.length || !list) return;
+      const seen = new Set(live.map((post) => post.id));
+      const posts = [...live, ...savedPosts.filter((post) => post.id && !seen.has(post.id))];
+      posts.sort((a, b) => posted(b) - posted(a));
+      list.replaceChildren(...posts.map(card));
+    })
+    .catch(() => {});
+</script>

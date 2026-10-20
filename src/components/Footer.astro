@@ -1,0 +1,77 @@
+---
+import { nav, site } from '../data/site';
+
+const mapQuery = encodeURIComponent(site.addressLine);
+const labels: Record<string, string> = {
+  '/seaside-news.html': 'Seaside News',
+  '/photos--videos.html': 'Photos & Videos',
+};
+const pages = nav
+  .filter((item) => item.href !== '/')
+  .map((item) => ({ ...item, label: labels[item.href] || item.label }));
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <hr class="footer-rule" />
+    <div class="footer-top">
+      <div class="footer-brand">
+        <img class="footer-logo" src="/images/logos/logo.png" alt="Seaside Dance Academy" width="240" height="24" />
+        <p class="footer-copy">{site.director}, founder</p>
+      </div>
+      <div class="socials">
+        <a href={site.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+          <i class="fa-brands fa-facebook" aria-hidden="true"></i>
+        </a>
+        <a href={site.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <i class="fa-brands fa-instagram" aria-hidden="true"></i>
+        </a>
+        <a href={site.youtube} target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+          <i class="fa-brands fa-youtube" aria-hidden="true"></i>
+        </a>
+      </div>
+    </div>
+    <div class="footer-grid">
+      <div class="footer-block">
+        <p class="footer-label">Studio</p>
+        <address>
+          <a class="footer-address" href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}>
+            <i class="fa-solid fa-location-dot icon" aria-hidden="true"></i>
+            <span>
+              <span class="footer-line">{site.street}</span>
+              <span class="footer-line">{site.city}, {site.region} {site.postal}</span>
+            </span>
+          </a>
+        </address>
+      </div>
+      <div class="footer-block">
+        <p class="footer-label">Contact</p>
+        <p>
+          <a href={`tel:${site.phoneTel}`}>
+            <i class="fa-solid fa-phone icon" aria-hidden="true"></i>{site.phoneDisplay}
+          </a>
+        </p>
+        <p>
+          <a href={`mailto:${site.email}`}>
+            <i class="fa-solid fa-envelope icon" aria-hidden="true"></i>{site.email}
+          </a>
+        </p>
+        <p class="footer-note">
+          <i class="fa-solid fa-clock icon" aria-hidden="true"></i>Desk staff during operation hours
+        </p>
+      </div>
+      <nav class="footer-block" aria-label="Pages">
+        <p class="footer-label">Pages</p>
+        <ul>
+          {pages.map((item) => (
+            <li>
+              <a href={item.href}>
+                <i class={`${item.brand ? 'fa-brands' : 'fa-solid'} fa-${item.icon} icon`} aria-hidden="true"></i>{item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </div>
+  </div>
+</footer>

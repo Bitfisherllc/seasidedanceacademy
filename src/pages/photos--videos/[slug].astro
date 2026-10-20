@@ -1,0 +1,69 @@
+---
+import Base from '../../layouts/Base.astro';
+import Hero from '../../components/Hero.astro';
+import { albumPhotos } from '../../data/album-photos';
+
+export function getStaticPaths() {
+  return albumPhotos.map((album) => ({
+    params: { slug: album.slug },
+    props: { album },
+  }));
+}
+
+const { album } = Astro.props;
+---
+
+<Base
+  title={`${album.title} | Seaside Dance Academy`}
+  description={`${album.title}. ${album.date}. Photos and videos from Seaside Dance Academy.`}
+  canonical={`/photos--videos/${album.slug}.html`}
+  crumb={album.title}
+>
+  <Hero slot="hero" icon="images" image="/images/hero/group-pink.jpg" focus="center" />
+  <section class="section">
+    <div class="container album-page">
+      <h1 class="center">
+        <span class="fs-32">{album.title}</span>
+      </h1>
+      <p class="copy center icon-line"><i class="fa-solid fa-calendar-days icon" aria-hidden="true"></i>{album.date}</p>
+      {album.video && (
+        <div class="video-frame">
+          <video controls playsinline preload="metadata" poster={album.cover || undefined}>
+            <source src={`/videos/${album.slug}.mp4`} type="video/mp4" />
+          </video>
+        </div>
+      )}
+      {album.images.length > 0 && (
+        <ul class="photo-grid">
+          {album.images.map((src, index) => (
+            <li>
+              <button type="button" data-photo={src} aria-label={`${album.title} photo ${index + 1}`}>
+                <img src={src} alt="" width="480" height="360" loading="lazy" />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+      <dialog class="photo-dialog" data-photo-dialog>
+        <form method="dialog">
+          <button type="submit" aria-label="Close photo"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+        </form>
+        <img alt="" data-photo-full width="1200" height="800" />
+      </dialog>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const dialog = document.querySelector('[data-photo-dialog]');
+  const full = dialog?.querySelector('[data-photo-full]');
+  document.querySelectorAll('[data-photo]').forEach((button) => {
+    button.addEventListener('click', () => {
+      if (!(dialog instanceof HTMLDialogElement) || !(full instanceof HTMLImageElement)) return;
+      const src = button.getAttribute('data-photo');
+      if (!src) return;
+      full.src = src;
+      dialog.showModal();
+    });
+  });
+</script>

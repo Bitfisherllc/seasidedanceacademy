@@ -1,0 +1,108 @@
+---
+import { nav, site } from '../data/site';
+
+const raw = Astro.url.pathname;
+const current = raw.replace(/\/index\.html$/, '/').replace(/\.html$/, '').replace(/\/$/, '') || '/';
+
+function isCurrent(href: string) {
+  const normalized = href.replace(/\.html$/, '').replace(/\/$/, '') || '/';
+  if (normalized === '/') return current === '/';
+  return current === normalized || current.startsWith(`${normalized}/`);
+}
+---
+
+<div class="mobile-nav" id="mobile-nav" aria-hidden="true" inert>
+  <nav aria-label="Mobile">
+    <ul>
+      {nav.map((item) => (
+        <li>
+          <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+            <i class={`${item.brand ? 'fa-brands' : 'fa-solid'} fa-${item.icon} icon`} aria-hidden="true"></i>{item.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</div>
+<button class="nav-overlay" type="button" tabindex="-1" aria-label="Close menu"></button>
+
+<header class="site-header">
+  <div class="brand">
+    <div class="container brand-inner">
+      <a class="brand-logo" href="/">
+        <img src="/images/logos/mark.jpeg" alt="" width="66" height="58" />
+        <span class="brand-name">Seaside Dance Academy</span>
+      </a>
+      <div class="brand-actions">
+        <a class="btn header-btn" href={`tel:${site.phoneTel}`}><span><i class="fa-solid fa-phone icon" aria-hidden="true"></i>Call</span></a>
+        <a class="btn header-btn" href="/contact.html"><span><i class="fa-solid fa-envelope icon" aria-hidden="true"></i>Contact</span></a>
+      </div>
+    </div>
+  </div>
+  <div class="nav-bar">
+    <div class="container nav-inner">
+      <a class="mobile-brand" href="/">
+        <img src="/images/logos/mark.jpeg" alt="Seaside Dance Academy" width="39" height="34" />
+      </a>
+      <div class="mobile-actions">
+        <a class="btn header-btn" href={`tel:${site.phoneTel}`}><span><i class="fa-solid fa-phone icon" aria-hidden="true"></i>Call</span></a>
+        <a class="btn header-btn" href="/contact.html"><span><i class="fa-solid fa-envelope icon" aria-hidden="true"></i>Contact</span></a>
+      </div>
+      <nav class="desktop-nav" aria-label="Primary">
+        <ul>
+          {nav.map((item) => (
+            <li>
+              <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
+                <i class={`${item.brand ? 'fa-brands' : 'fa-solid'} fa-${item.icon} icon`} aria-hidden="true"></i>{item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <form class="search" action="/apps/search" method="get" role="search">
+        <label class="visually-hidden" for="site-search">Search</label>
+        <input id="site-search" type="search" name="q" placeholder="Search" autocomplete="off" />
+        <button type="submit" aria-label="Search"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
+      </form>
+      <button class="hamburger" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu">
+        <span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  const button = document.querySelector<HTMLButtonElement>('.hamburger');
+  const overlay = document.querySelector<HTMLButtonElement>('.nav-overlay');
+  const panel = document.getElementById('mobile-nav');
+
+  function setOpen(open: boolean) {
+    document.body.classList.toggle('nav-open', open);
+    button?.setAttribute('aria-expanded', String(open));
+    button?.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    if (panel) {
+      panel.toggleAttribute('inert', !open);
+      panel.setAttribute('aria-hidden', String(!open));
+    }
+    if (open) panel?.querySelector('a')?.focus();
+  }
+
+  button?.addEventListener('click', () => {
+    setOpen(!document.body.classList.contains('nav-open'));
+  });
+  overlay?.addEventListener('click', () => setOpen(false));
+  panel?.addEventListener('click', (event) => {
+    const target = event.target as HTMLElement;
+    if (target.closest('a')) setOpen(false);
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') setOpen(false);
+  });
+
+  const siteHeader = document.querySelector('.site-header');
+  const markStuck = () => {
+    siteHeader?.classList.toggle('is-stuck', window.scrollY > 12);
+  };
+  markStuck();
+  window.addEventListener('scroll', markStuck, { passive: true });
+</script>

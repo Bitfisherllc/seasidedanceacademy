@@ -1,0 +1,40 @@
+---
+import type { DanceClass } from '../data/classes';
+
+interface Props {
+  item: DanceClass;
+  link?: boolean;
+  register?: boolean;
+}
+
+const { item, link = false, register = false } = Astro.props;
+---
+
+{link ? (
+  <a class="class-card" href={`/classes.html#${item.id}`}>
+    <strong>{item.name}</strong>
+    <ul class="fact-list">
+      <li><i class="fa-solid fa-child icon" aria-hidden="true"></i>{item.ages}</li>
+      <li><i class="fa-solid fa-clock icon" aria-hidden="true"></i>{item.when}</li>
+      <li><i class="fa-solid fa-dollar-sign icon" aria-hidden="true"></i>{item.tuition}</li>
+    </ul>
+    <p class="copy">{item.summary}</p>
+    {item.recital && <p class="copy recital-note"><i class="fa-solid fa-music icon" aria-hidden="true"></i>{item.recital}</p>}
+  </a>
+) : (
+  <article class="class-card" id={item.id}>
+    <strong>{item.name}</strong>
+    <ul class="fact-list">
+      <li><i class="fa-solid fa-child icon" aria-hidden="true"></i>{item.ages}</li>
+      <li><i class="fa-solid fa-clock icon" aria-hidden="true"></i>{item.when}</li>
+      <li><i class="fa-solid fa-dollar-sign icon" aria-hidden="true"></i>{item.tuition}</li>
+    </ul>
+    <p class="copy">{item.summary}</p>
+    {item.recital && <p class="copy recital-note"><i class="fa-solid fa-music icon" aria-hidden="true"></i>{item.recital}</p>}
+    {register && (
+      <a class="btn class-register" href={`/registration.html?class=${item.id}#registration-form`}>
+        <span><i class="fa-solid fa-clipboard-list icon" aria-hidden="true"></i>Register</span>
+      </a>
+    )}
+  </article>
+)}

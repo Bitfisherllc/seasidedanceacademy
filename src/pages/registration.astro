@@ -1,0 +1,284 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import TurnstileField from '../components/TurnstileField.astro';
+import { pages, site } from '../data/site';
+import { classes } from '../data/classes';
+---
+
+<Base title={pages.registration.title} description={pages.registration.description} canonical="/registration.html">
+  <Hero slot="hero" icon="clipboard-list" image="/images/hero/group-pink.jpg" focus="center" />
+  <section class="section">
+    <div class="container">
+      <h1>
+        <span class="fs-32">Registration</span><br />
+        <span class="fs-18 tone-soft">2026–2027 season</span>
+      </h1>
+      <ul class="fact-list">
+        <li><i class="fa-solid fa-clipboard-check icon" aria-hidden="true"></i>{site.season}</li>
+        <li><i class="fa-solid fa-calendar-days icon" aria-hidden="true"></i>{site.seasonStart}</li>
+      </ul>
+      <div class="schedule-pair">
+        <img src="/images/schedule/class-schedule.png" alt="Class schedule. Registration is now open. Classes begin September 14th." width="618" height="800" />
+        <img src="/images/schedule/pom-classes.png" alt="Junior Pom and Pom and Dance Team Prep are back." width="618" height="800" />
+      </div>
+
+      <h2>Email form</h2>
+      <form class="contact-form" id="registration-form" data-email={site.email} novalidate>
+        <p class="req-note"><span class="req">*</span> Indicates required field</p>
+        <div class="hp" aria-hidden="true">
+          <label for="company">Company</label>
+          <input id="company" name="company" type="text" tabindex="-1" autocomplete="off" />
+        </div>
+        <p class="field-label"><i class="fa-solid fa-user icon" aria-hidden="true"></i>Billing name <span class="req">*</span></p>
+        <div class="name-row">
+          <div class="field">
+            <label class="visually-hidden" for="billing-first">First</label>
+            <input id="billing-first" name="billingFirst" type="text" placeholder="First" required maxlength="60" autocomplete="given-name" />
+          </div>
+          <div class="field">
+            <label class="visually-hidden" for="billing-last">Last</label>
+            <input id="billing-last" name="billingLast" type="text" placeholder="Last" required maxlength="60" autocomplete="family-name" />
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label" for="email"><i class="fa-solid fa-envelope icon" aria-hidden="true"></i>Email <span class="req">*</span></label>
+          <input id="email" name="email" type="email" required maxlength="254" autocomplete="email" />
+        </div>
+        <p class="field-label"><i class="fa-solid fa-location-dot icon" aria-hidden="true"></i>Address <span class="req">*</span></p>
+        <div class="field">
+          <label class="visually-hidden" for="address1">Line 1</label>
+          <input id="address1" name="address1" type="text" placeholder="Line 1" required maxlength="120" autocomplete="address-line1" />
+        </div>
+        <div class="field">
+          <label class="visually-hidden" for="address2">Line 2</label>
+          <input id="address2" name="address2" type="text" placeholder="Line 2" maxlength="120" autocomplete="address-line2" />
+        </div>
+        <div class="address-row">
+          <div class="field">
+            <label class="visually-hidden" for="city">City</label>
+            <input id="city" name="city" type="text" placeholder="City" required maxlength="80" autocomplete="address-level2" />
+          </div>
+          <div class="field">
+            <label class="visually-hidden" for="state">State</label>
+            <input id="state" name="state" type="text" placeholder="State" required maxlength="40" autocomplete="address-level1" />
+          </div>
+          <div class="field">
+            <label class="visually-hidden" for="zip">Zip code</label>
+            <input id="zip" name="zip" type="text" placeholder="Zip Code" required maxlength="20" autocomplete="postal-code" />
+          </div>
+          <div class="field">
+            <label class="visually-hidden" for="country">Country</label>
+            <input id="country" name="country" type="text" placeholder="Country" maxlength="60" autocomplete="country-name" />
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label" for="home-phone"><i class="fa-solid fa-phone icon" aria-hidden="true"></i>Home phone number <span class="req">*</span></label>
+          <input id="home-phone" name="homePhone" type="tel" required maxlength="30" autocomplete="tel" />
+        </div>
+        <div class="field">
+          <label class="field-label" for="cell-phone"><i class="fa-solid fa-mobile-screen icon" aria-hidden="true"></i>Cell phone number <span class="req">*</span></label>
+          <input id="cell-phone" name="cellPhone" type="tel" required maxlength="30" autocomplete="tel" />
+        </div>
+        <p class="field-label"><i class="fa-solid fa-child icon" aria-hidden="true"></i>Student name <span class="req">*</span></p>
+        <div class="name-row">
+          <div class="field">
+            <label class="visually-hidden" for="student-first">Student first</label>
+            <input id="student-first" name="studentFirst" type="text" placeholder="First" required maxlength="60" />
+          </div>
+          <div class="field">
+            <label class="visually-hidden" for="student-last">Student last</label>
+            <input id="student-last" name="studentLast" type="text" placeholder="Last" required maxlength="60" />
+          </div>
+        </div>
+        <div class="name-row">
+          <div class="field">
+            <label class="field-label" for="student-age">Student age <span class="req">*</span></label>
+            <input id="student-age" name="studentAge" type="text" required maxlength="3" />
+          </div>
+          <div class="field">
+            <label class="field-label" for="birth-date"><i class="fa-solid fa-calendar-days icon" aria-hidden="true"></i>Student birth date <span class="req">*</span></label>
+            <input id="birth-date" name="birthDate" type="text" required maxlength="10" placeholder="MM/DD/YYYY" />
+          </div>
+        </div>
+        <div class="class-picks" id="class-list">
+          <div class="class-pick" data-class-pick>
+            <div class="class-pick-head">
+              <p class="field-label class-pick-title">
+                <i class="fa-solid fa-person-running icon" aria-hidden="true"></i>
+                <span data-class-title>Class 1</span>
+              </p>
+              <button class="class-remove" type="button" data-remove-class hidden><i class="fa-solid fa-xmark icon" aria-hidden="true"></i>Remove</button>
+            </div>
+            <div class="field">
+              <label class="field-label" for="class-choice" data-class-label><i class="fa-solid fa-person-running icon" aria-hidden="true"></i>Class choice <span class="req">*</span></label>
+              <select id="class-choice" name="classChoice" required>
+                <option value="">Select a class</option>
+                {classes.map((item) => <option value={item.id} data-when={item.when}>{item.name}</option>)}
+              </select>
+            </div>
+            <div class="field">
+              <label class="field-label" for="class-day" data-day-label><i class="fa-solid fa-clock icon" aria-hidden="true"></i>Please specify class day <span class="req">*</span></label>
+              <input id="class-day" name="classDay" type="text" required maxlength="80" />
+            </div>
+          </div>
+        </div>
+        <button class="btn add-class" type="button" id="add-class"><span><i class="fa-solid fa-plus icon" aria-hidden="true"></i>Add another class</span></button>
+        <TurnstileField action="registration" />
+        <p class="form-status" id="form-status" role="status"></p>
+        <button class="btn" type="submit"><span><i class="fa-solid fa-envelope icon" aria-hidden="true"></i>Open email</span></button>
+      </form>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { mountTurnstile, passedSpamCheck } from '../scripts/turnstile';
+
+  const form = document.querySelector<HTMLFormElement>('#registration-form');
+  const status = document.querySelector<HTMLElement>('#form-status');
+  const list = document.querySelector<HTMLElement>('#class-list');
+  const addButton = document.querySelector<HTMLButtonElement>('#add-class');
+  const firstRow = list?.querySelector<HTMLElement>('[data-class-pick]');
+  const rowTemplate = document.createElement('template');
+  if (firstRow) rowTemplate.innerHTML = firstRow.outerHTML;
+
+  function value(data: FormData, name: string) {
+    return String(data.get(name) || '').trim();
+  }
+
+  function rows() {
+    return [...(list?.querySelectorAll<HTMLElement>('[data-class-pick]') || [])];
+  }
+
+  function scheduleFor(select: HTMLSelectElement) {
+    return select.selectedOptions[0]?.dataset.when || '';
+  }
+
+  function applySchedule(select: HTMLSelectElement) {
+    const row = select.closest<HTMLElement>('[data-class-pick]');
+    const day = row?.querySelector<HTMLInputElement>('input[name="classDay"]');
+    if (!day) return;
+    const when = scheduleFor(select);
+    const single = when && !/ or /i.test(when);
+    if (single && (!day.value || day.dataset.filled === 'auto')) {
+      day.value = when;
+      day.dataset.filled = 'auto';
+      return;
+    }
+    if (!single && day.dataset.filled === 'auto') {
+      day.value = '';
+      delete day.dataset.filled;
+    }
+  }
+
+  function renumber() {
+    const picks = rows();
+    picks.forEach((row, index) => {
+      const title = row.querySelector('[data-class-title]');
+      if (title) title.textContent = `Class ${index + 1}`;
+      const select = row.querySelector<HTMLSelectElement>('select');
+      const day = row.querySelector<HTMLInputElement>('input[name="classDay"]');
+      const classLabel = row.querySelector('[data-class-label]');
+      const dayLabel = row.querySelector('[data-day-label]');
+      const remove = row.querySelector<HTMLButtonElement>('[data-remove-class]');
+      if (select) {
+        select.id = `class-choice-${index + 1}`;
+        classLabel?.setAttribute('for', select.id);
+      }
+      if (day) {
+        day.id = `class-day-${index + 1}`;
+        dayLabel?.setAttribute('for', day.id);
+      }
+      if (remove) remove.hidden = picks.length === 1;
+    });
+  }
+
+  function addClass(classId = '') {
+    const markup = rowTemplate.content.firstElementChild;
+    if (!list || !(markup instanceof HTMLElement)) return;
+    const row = markup.cloneNode(true) as HTMLElement;
+    const select = row.querySelector<HTMLSelectElement>('select');
+    const day = row.querySelector<HTMLInputElement>('input[name="classDay"]');
+    if (select) select.value = classId;
+    if (day) {
+      day.value = '';
+      delete day.dataset.filled;
+    }
+    list.append(row);
+    renumber();
+    if (select) applySchedule(select);
+    select?.focus();
+  }
+
+  renumber();
+  const requested = new URLSearchParams(window.location.search).get('class');
+  const firstSelect = firstRow?.querySelector<HTMLSelectElement>('select');
+  if (requested && firstSelect && [...firstSelect.options].some((option) => option.value === requested)) {
+    firstSelect.value = requested;
+    applySchedule(firstSelect);
+  }
+
+  addButton?.addEventListener('click', () => addClass());
+
+  list?.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const button = target.closest('[data-remove-class]');
+    if (!button || rows().length < 2) return;
+    button.closest('[data-class-pick]')?.remove();
+    renumber();
+  });
+
+  list?.addEventListener('change', (event) => {
+    if (event.target instanceof HTMLSelectElement) applySchedule(event.target);
+  });
+
+  list?.addEventListener('input', (event) => {
+    if (event.target instanceof HTMLInputElement && event.target.name === 'classDay') {
+      delete event.target.dataset.filled;
+    }
+  });
+
+  mountTurnstile(form || document);
+
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!form || !status) return;
+    if (!form.reportValidity()) return;
+    const data = new FormData(form);
+    if (value(data, 'company')) return;
+    const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (submit) submit.disabled = true;
+    try {
+      if (!(await passedSpamCheck(form, status))) return;
+      const address = [value(data, 'address1'), value(data, 'address2'), value(data, 'city'), value(data, 'state'), value(data, 'zip'), value(data, 'country')]
+        .filter(Boolean)
+        .join(', ');
+      const classLines = rows().map((row, index) => {
+        const select = row.querySelector<HTMLSelectElement>('select');
+        const day = row.querySelector<HTMLInputElement>('input[name="classDay"]');
+        const name = select?.selectedOptions[0]?.textContent?.trim() || '';
+        return `${index + 1}. ${name} — ${day?.value.trim() || ''}`;
+      });
+      const body = [
+        `Billing name: ${value(data, 'billingFirst')} ${value(data, 'billingLast')}`,
+        `Email: ${value(data, 'email')}`,
+        `Address: ${address}`,
+        `Home phone: ${value(data, 'homePhone')}`,
+        `Cell phone: ${value(data, 'cellPhone')}`,
+        `Student: ${value(data, 'studentFirst')} ${value(data, 'studentLast')}`,
+        `Age: ${value(data, 'studentAge')}`,
+        `Birth date: ${value(data, 'birthDate')}`,
+        'Classes:',
+        ...classLines,
+      ].join('\n');
+      const href = `mailto:${form.dataset.email}?subject=${encodeURIComponent('Class registration')}&body=${encodeURIComponent(body)}`;
+      status.classList.remove('is-error');
+      status.textContent = 'Your email app is opening. Send the message to finish.';
+      window.location.href = href;
+    } finally {
+      if (submit) submit.disabled = false;
+    }
+  });
+</script>

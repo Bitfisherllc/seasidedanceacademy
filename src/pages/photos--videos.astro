@@ -1,0 +1,53 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import { pages } from '../data/site';
+import { albums } from '../data/albums';
+import { instagramPosts } from '../data/instagram';
+---
+
+<Base title={pages.photos.title} description={pages.photos.description} canonical="/photos--videos.html">
+  <Hero slot="hero" icon="images" image="/images/hero/duo-sequin.jpg" focus="center 18%" />
+  <section class="section">
+    <div class="container">
+      <h1 class="center">
+        <span class="fs-32">Photos &amp; Videos</span>
+      </h1>
+      <a class="ig-category" href="/photos--videos/instagram.html">
+        <span class="ig-category-photo">
+          <img src={instagramPosts[0].image} data-ig-cover alt="" width="640" height="640" />
+          <i class="fa-brands fa-instagram ig-mark" aria-hidden="true"></i>
+        </span>
+        <span class="ig-category-copy">
+          <span class="album-title">Instagram</span>
+          <span class="copy">Photos from @seasidedanceacademy_</span>
+        </span>
+      </a>
+      <div class="album-grid">
+        {albums.map((album) => (
+          <a class="album-card" href={album.href}>
+            <span class="album-photo">
+              <img src={album.image} alt="" width="480" height="320" loading="lazy" />
+              {album.video && <i class="fa-solid fa-play album-play" aria-hidden="true"></i>}
+            </span>
+            <span class="album-body">
+              <span class="album-title">{album.title}</span>
+              <span class="album-date"><i class="fa-solid fa-calendar-days icon" aria-hidden="true"></i>{album.date}</span>
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const cover = document.querySelector('[data-ig-cover]');
+  fetch('/api/instagram')
+    .then((response) => (response.ok ? response.json() : null))
+    .then((data) => {
+      const image = data?.posts?.[0]?.image;
+      if (image && cover instanceof HTMLImageElement) cover.src = image;
+    })
+    .catch(() => {});
+</script>

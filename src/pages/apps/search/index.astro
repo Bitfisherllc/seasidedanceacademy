@@ -1,0 +1,62 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { classes } from '../../../data/classes';
+import { albums } from '../../../data/albums';
+import { newsPosts } from '../../../data/news';
+import { site } from '../../../data/site';
+
+const entries = [
+  ...classes.map((item) => ({
+    href: `/classes.html#${item.id}`,
+    title: item.name,
+    text: `${item.ages}. ${item.when}. ${item.tuition}`,
+    icon: 'person-running',
+    brand: false,
+  })),
+  { href: '/', title: 'Home', text: site.quote, icon: 'house', brand: false },
+  { href: '/classes.html', title: 'Classes', text: 'Schedule, ages, and tuition', icon: 'person-running', brand: false },
+  { href: '/registration.html', title: 'Registration', text: site.season, icon: 'clipboard-list', brand: false },
+  { href: '/seaside-news.html', title: 'Seaside News', text: newsPosts.map((post) => post.text).join(' '), icon: 'facebook', brand: true },
+  { href: '/photos--videos.html', title: 'Photos & Videos', text: albums.map((album) => album.title).join(' '), icon: 'images', brand: false },
+  { href: '/photos--videos/instagram.html', title: 'Instagram', text: 'Photos from seasidedanceacademy_', icon: 'instagram', brand: true },
+  { href: '/contact.html', title: 'Contact', text: `${site.phoneDisplay} ${site.email} ${site.addressLine}`, icon: 'envelope', brand: false },
+];
+---
+
+<Base title="Search | Seaside Dance Academy" description="Search Seaside Dance Academy classes and pages." canonical="/apps/search">
+  <section class="section">
+    <div class="container">
+      <h1>Search</h1>
+      <form class="search" action="/apps/search" method="get" role="search" style="position: static; border: 1px solid #ccc;">
+        <label class="visually-hidden" for="q">Search</label>
+        <input id="q" type="search" name="q" placeholder="Search" />
+        <button type="submit" aria-label="Search"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
+      </form>
+      <p class="copy" id="search-empty" hidden><i class="fa-solid fa-magnifying-glass icon" aria-hidden="true"></i>No matches.</p>
+      <ul class="results" id="results"></ul>
+    </div>
+  </section>
+</Base>
+
+<script define:vars={{ entries }}>
+  const params = new URLSearchParams(window.location.search);
+  const q = (params.get('q') || '').trim().toLowerCase();
+  const input = document.querySelector('#q');
+  const list = document.querySelector('#results');
+  const empty = document.querySelector('#search-empty');
+  if (input instanceof HTMLInputElement) input.value = params.get('q') || '';
+  const esc = (value) =>
+    String(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+  const hits = q
+    ? entries.filter((item) => `${item.title} ${item.text}`.toLowerCase().includes(q))
+    : entries.filter((item) => !item.href.includes('#'));
+  if (list) {
+    list.innerHTML = hits
+      .map(
+        (item) =>
+          `<li><a href="${esc(item.href)}"><i class="${item.brand ? 'fa-brands' : 'fa-solid'} fa-${esc(item.icon)} icon" aria-hidden="true"></i>${esc(item.title)}</a><p class="copy">${esc(item.text)}</p></li>`,
+      )
+      .join('');
+  }
+  if (empty) empty.hidden = !q || hits.length > 0;
+</script>

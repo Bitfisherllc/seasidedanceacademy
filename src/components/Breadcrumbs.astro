@@ -1,0 +1,72 @@
+---
+import { site } from '../data/site';
+
+interface Props {
+  canonical: string;
+  current?: string;
+}
+
+const { canonical, current } = Astro.props;
+
+const path = canonical.replace(/\.html$/, '').replace(/\/$/, '') || '/';
+
+const labels: Record<string, string> = {
+  '/': 'Home',
+  '/classes': 'Classes',
+  '/registration': 'Registration',
+  '/seaside-news': 'News',
+  '/photos--videos': 'Photos & Videos',
+  '/photos--videos/instagram': 'Instagram',
+  '/contact': 'Contact',
+  '/apps/search': 'Search',
+  '/404': 'Page not found',
+};
+
+const home = { href: '/', label: 'Home' };
+const photos = { href: '/photos--videos.html', label: 'Photos & Videos' };
+
+let items: { href?: string; label: string }[];
+
+if (path === '/') {
+  items = [{ label: 'Home' }];
+} else if (path.startsWith('/photos--videos/') && path !== '/photos--videos/instagram') {
+  items = [home, photos, { label: current || 'Album' }];
+} else if (path === '/photos--videos/instagram') {
+  items = [home, photos, { label: 'Instagram' }];
+} else {
+  items = [home, { label: current || labels[path] || 'Page' }];
+}
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: items.map((item, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: item.label,
+    ...(item.href ? { item: new URL(item.href, site.url).href } : { item: new URL(canonical, site.url).href }),
+  })),
+};
+---
+
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+  <ol>
+    {items.map((item, index) => (
+      <li>
+        {index > 0 && <span class="crumb-sep" aria-hidden="true">/</span>}
+        {item.href ? (
+          <a href={item.href}>
+            {index === 0 && <i class="fa-solid fa-house icon" aria-hidden="true"></i>}
+            {item.label}
+          </a>
+        ) : (
+          <span aria-current="page">
+            {index === 0 && <i class="fa-solid fa-house icon" aria-hidden="true"></i>}
+            {item.label}
+          </span>
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />

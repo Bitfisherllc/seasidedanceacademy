@@ -1,0 +1,27 @@
+---
+import { gallery } from '../data/albums';
+---
+
+<div class="slideshow-frame" data-slideshow>
+  {gallery.map((photo, index) => (
+    <a class:list={['slide-link', { 'is-active': index === 0 }]} href="/photos--videos.html">
+      <img src={photo.src} alt={photo.alt} width="1100" height="733" />
+    </a>
+  ))}
+  <button class="slide-btn slide-prev" type="button" aria-label="Previous photo"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></button>
+  <button class="slide-btn slide-next" type="button" aria-label="Next photo"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></button>
+</div>
+
+<script>
+  const frame = document.querySelector('[data-slideshow]');
+  if (frame) {
+    const slides = [...frame.querySelectorAll<HTMLElement>('.slide-link')];
+    let index = 0;
+    const show = (next: number) => {
+      index = (next + slides.length) % slides.length;
+      slides.forEach((slide, i) => slide.classList.toggle('is-active', i === index));
+    };
+    frame.querySelector('.slide-prev')?.addEventListener('click', () => show(index - 1));
+    frame.querySelector('.slide-next')?.addEventListener('click', () => show(index + 1));
+  }
+</script>

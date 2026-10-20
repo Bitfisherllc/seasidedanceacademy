@@ -1,0 +1,117 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Slideshow from '../components/Slideshow.astro';
+import ClassCard from '../components/ClassCard.astro';
+import { pages, site } from '../data/site';
+import { homeClasses } from '../data/classes';
+import { directorBio, studioFacts, studioParagraphs } from '../data/studio';
+---
+
+<Base title={pages.home.title} description={pages.home.description} canonical="/">
+  <Hero slot="hero" icon="house" home image="/images/hero/duo-blue.jpg" focus="center">
+    <div class="hero-help">
+      <p class="hero-line">{site.season}</p>
+      <div class="contact-choices">
+        <a class="contact-choice" href="/classes.html">
+          <i class="fa-solid fa-person-running choice-icon" aria-hidden="true"></i>
+          <span class="choice-copy">
+            <span class="choice-title">Classes</span>
+            <span class="choice-note">{site.seasonStart}</span>
+          </span>
+        </a>
+        <a class="contact-choice" href="/registration.html">
+          <i class="fa-solid fa-clipboard-list choice-icon" aria-hidden="true"></i>
+          <span class="choice-copy">
+            <span class="choice-title">Register</span>
+            <span class="choice-note">Save a spot for the season.</span>
+          </span>
+        </a>
+        <a class="contact-choice" href="/contact.html">
+          <i class="fa-solid fa-envelope choice-icon" aria-hidden="true"></i>
+          <span class="choice-copy">
+            <span class="choice-title">Contact</span>
+            <span class="choice-note">Call or send a note.</span>
+          </span>
+        </a>
+      </div>
+    </div>
+  </Hero>
+
+  <section class="section">
+    <div class="container">
+      <div class="cols cols-2">
+        <Slideshow />
+        <div>
+          <h1>
+            <span class="fs-16">Berlin, Maryland</span><br />
+            <span class="fs-18">Seaside Dance Academy</span>
+          </h1>
+          <p class="copy">{site.quote}</p>
+          <p class="heading">
+            <span class="fs-24 tone-gray">Call the studio</span><br />
+            <a class="phone-link" href={`tel:${site.phoneTel}`}><i class="fa-solid fa-phone icon" aria-hidden="true"></i>{site.phoneDisplay}</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="center">
+        <span class="fs-32">The studio</span><br />
+        <span class="fs-18 tone-soft">Worcester County since 2001</span>
+      </h2>
+      {studioParagraphs.map((paragraph) => <p class="copy center trust-lead">{paragraph}</p>)}
+      <div class="cols cols-4 trust-points">
+        {studioFacts.map((fact) => (
+          <p class="trust-point">
+            <i class={`fa-solid fa-${fact.icon}`} aria-hidden="true"></i>
+            <strong>{fact.label}</strong>
+          </p>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <div class="photo-band">
+    <img src="/images/gallery/03.jpg" alt="" width="1100" height="733" />
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="center">
+        <span class="fs-32">Classes</span><br />
+        <span class="fs-18 tone-soft">2026–2027 season</span>
+      </h2>
+      <ul class="fact-list fact-list-center">
+        <li><i class="fa-solid fa-clipboard-check icon" aria-hidden="true"></i>{site.season}</li>
+        <li><i class="fa-solid fa-calendar-days icon" aria-hidden="true"></i>{site.seasonStart}</li>
+      </ul>
+      <div class="class-grid">
+        {homeClasses.map((item) => <ClassCard item={item} link />)}
+      </div>
+      <p class="center"><a class="btn" href="/classes.html"><span><i class="fa-solid fa-calendar-days icon" aria-hidden="true"></i>Full schedule</span></a></p>
+    </div>
+  </section>
+
+  <div class="photo-band">
+    <img src="/images/gallery/01.jpg" alt="" width="1100" height="733" />
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="center">
+        <span class="fs-32">Studio director</span><br />
+        <span class="fs-18 tone-soft">{site.director}</span>
+      </h2>
+      <div class="director">
+        <img class="portrait" src="/images/studio/lisa-tingle.jpg" alt="Lisa Tingle, founder of Seaside Dance Academy" width="128" height="166" />
+        <div>
+          {directorBio.map((paragraph) => <p class="copy">{paragraph}</p>)}
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

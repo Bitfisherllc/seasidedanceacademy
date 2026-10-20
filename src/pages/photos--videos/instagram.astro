@@ -1,0 +1,97 @@
+---
+import Base from '../../layouts/Base.astro';
+import Hero from '../../components/Hero.astro';
+import { instagramPosts } from '../../data/instagram';
+---
+
+<Base
+  title="Instagram | Seaside Dance Academy"
+  description="Photos from the Seaside Dance Academy Instagram, @seasidedanceacademy_."
+  canonical="/photos--videos/instagram.html"
+>
+  <Hero slot="hero" icon="instagram" brand image="/images/hero/portrait-smile.jpg" focus="center" />
+  <section class="section">
+    <div class="container album-page">
+      <h1 class="center">
+        <span class="fs-32">Instagram</span>
+      </h1>
+      <p class="copy center icon-line"><i class="fa-brands fa-instagram icon" aria-hidden="true"></i>Photos from @seasidedanceacademy_.</p>
+      <ul class="photo-grid ig-grid" data-ig-grid>
+        {instagramPosts.map((post) => (
+          <li>
+            <button type="button" data-photo={post.image} aria-label={`Instagram photo from ${post.date}`}>
+              <img src={post.image} alt="" width="640" height="640" loading="lazy" />
+              {post.video && <i class="fa-solid fa-play album-play" aria-hidden="true"></i>}
+            </button>
+          </li>
+        ))}
+      </ul>
+      <dialog class="photo-dialog" data-photo-dialog>
+        <form method="dialog">
+          <button type="submit" aria-label="Close photo"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+        </form>
+        <img alt="" data-photo-full width="1200" height="1200" />
+      </dialog>
+    </div>
+  </section>
+</Base>
+
+<script define:vars={{ saved: instagramPosts }}>
+  const grid = document.querySelector('[data-ig-grid]');
+  const dialog = document.querySelector('[data-photo-dialog]');
+  const full = dialog?.querySelector('[data-photo-full]');
+
+  function codeFrom(href) {
+    const match = String(href || '').match(/\/(?:p|reel)\/([^/?#]+)/);
+    return match ? match[1] : '';
+  }
+
+  function render(posts) {
+    if (!grid) return;
+    grid.replaceChildren(
+      ...posts.map((post) => {
+        const item = document.createElement('li');
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.dataset.photo = post.image;
+        button.setAttribute('aria-label', post.date ? `Instagram photo from ${post.date}` : 'Instagram photo');
+        const image = document.createElement('img');
+        image.src = post.image;
+        image.alt = '';
+        image.width = 640;
+        image.height = 640;
+        image.loading = 'lazy';
+        button.append(image);
+        if (post.video) {
+          const icon = document.createElement('i');
+          icon.className = 'fa-solid fa-play album-play';
+          icon.setAttribute('aria-hidden', 'true');
+          button.append(icon);
+        }
+        item.append(button);
+        return item;
+      }),
+    );
+  }
+
+  grid?.addEventListener('click', (event) => {
+    const button = event.target instanceof Element ? event.target.closest('[data-photo]') : null;
+    if (!button || !(dialog instanceof HTMLDialogElement) || !(full instanceof HTMLImageElement)) return;
+    const src = button.getAttribute('data-photo');
+    if (!src) return;
+    full.src = src;
+    dialog.showModal();
+  });
+
+  const savedPosts = saved.map((post) => ({ ...post, code: codeFrom(post.href) }));
+
+  fetch('/api/instagram')
+    .then((response) => (response.ok ? response.json() : null))
+    .then((data) => {
+      const live = Array.isArray(data?.posts) ? data.posts : [];
+      if (!live.length) return;
+      const seen = new Set(live.map((post) => post.code));
+      render([...live, ...savedPosts.filter((post) => post.code && !seen.has(post.code))]);
+    })
+    .catch(() => {});
+</script>

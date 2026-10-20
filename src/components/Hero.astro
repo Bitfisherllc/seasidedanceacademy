@@ -1,0 +1,84 @@
+---
+interface Props {
+  icon: string;
+  home?: boolean;
+  brand?: boolean;
+  image?: string;
+  focus?: string;
+}
+
+const {
+  icon,
+  home = false,
+  brand = false,
+  image = '/images/hero/duo-blue.jpg',
+  focus = 'center',
+} = Astro.props;
+---
+
+<section class:list={['hero', { 'hero-home': home }]} aria-label="Seaside Dance Academy">
+  <div class="hero-parallax">
+    <img
+      class="hero-bg"
+      src={image}
+      alt=""
+      width="1100"
+      height="733"
+      style={`object-position: ${focus}`}
+      fetchpriority={home ? 'high' : 'auto'}
+      loading="eager"
+      decoding="async"
+    />
+  </div>
+  <div class="hero-shade"></div>
+  <svg class="hero-wave" viewBox="0 0 1440 140" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <path fill="#ffffff" opacity="0.18" d="M0 46C220 96 460 18 740 58C1020 98 1220 28 1440 62L1440 140L0 140Z"></path>
+    <path fill="#ffffff" opacity="0.38" d="M0 72C200 112 440 48 720 82C1000 116 1220 70 1440 90L1440 140L0 140Z"></path>
+    <path fill="#ffffff" d="M0 96C240 122 480 74 760 104C1040 132 1240 96 1440 112L1440 140L0 140Z"></path>
+  </svg>
+  <div class="hero-inner">
+    {!home && (
+      <div class="hero-split">
+        <i class={`${brand ? 'fa-brands' : 'fa-solid'} fa-${icon} hero-icon`} aria-hidden="true"></i>
+        <div>
+          <blockquote class="hero-quote">
+            <p>“We pride ourselves in providing strong technical dance training in a supportive and encouraging environment.”</p>
+          </blockquote>
+        </div>
+      </div>
+    )}
+    <slot />
+  </div>
+</section>
+
+<script>
+  const hero = document.querySelector<HTMLElement>('.hero');
+  const layer = hero?.querySelector<HTMLElement>('.hero-parallax');
+  const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  function place() {
+    if (!hero || !layer) return;
+    if (motion.matches || window.innerWidth < 768) {
+      layer.style.transform = '';
+      return;
+    }
+    const rect = hero.getBoundingClientRect();
+    const progress = Math.min(1, Math.max(0, (window.innerHeight - rect.top) / (window.innerHeight + rect.height)));
+    const shift = (progress - 0.5) * hero.offsetHeight * 0.45;
+    layer.style.transform = `translate3d(0, ${shift.toFixed(2)}px, 0)`;
+  }
+
+  let frame = 0;
+  function request() {
+    if (frame) return;
+    frame = requestAnimationFrame(() => {
+      frame = 0;
+      place();
+    });
+  }
+
+  place();
+  window.addEventListener('scroll', request, { passive: true });
+  window.addEventListener('resize', request);
+  motion.addEventListener('change', place);
+</script>

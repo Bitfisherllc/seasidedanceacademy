@@ -1,0 +1,14 @@
+---
+interface Props {
+  action: 'contact' | 'registration';
+}
+
+const { action } = Astro.props;
+const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || (import.meta.env.DEV ? '1x00000000000000000000AA' : '');
+---
+
+{siteKey ? (
+  <div class="turnstile-slot" data-turnstile data-sitekey={siteKey} data-action={action}></div>
+) : (
+  <p class="form-status is-error">This form is unavailable until spam protection is configured.</p>
+)}

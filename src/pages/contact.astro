@@ -1,0 +1,94 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import TurnstileField from '../components/TurnstileField.astro';
+import { pages, site } from '../data/site';
+
+const mapQuery = encodeURIComponent(site.addressLine);
+---
+
+<Base title={pages.contact.title} description={pages.contact.description} canonical="/contact.html">
+  <Hero slot="hero" icon="envelope" image="/images/hero/portrait-smile.jpg" focus="center" />
+  <section class="section">
+    <div class="container">
+      <div class="cols cols-2">
+        <div>
+          <h1>Contact Seaside Dance Academy</h1>
+          <p class="copy detail-line"><i class="fa-solid fa-location-dot icon" aria-hidden="true"></i>{site.contactAddressLine}</p>
+          <p class="heading">
+            <a class="phone-link" href={`tel:${site.phoneTel}`}><i class="fa-solid fa-phone icon" aria-hidden="true"></i>{site.phoneDisplay}</a>
+          </p>
+          <p class="copy"><a class="detail-line" href={`mailto:${site.email}`}><i class="fa-solid fa-envelope icon" aria-hidden="true"></i>{site.email}</a></p>
+          <p class="copy"><a class="detail-line address-link" href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}><i class="fa-solid fa-map-location-dot icon" aria-hidden="true"></i>{site.addressLine}</a></p>
+          <p class="copy">Check us out on <a href={site.facebook} target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-facebook icon" aria-hidden="true"></i>Facebook</a> and <a href={site.instagram} target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-instagram icon" aria-hidden="true"></i>Instagram</a>.</p>
+        </div>
+        <form class="contact-form" id="contact-form" data-email={site.email} novalidate>
+          <p class="req-note"><span class="req">*</span> Indicates required field</p>
+          <div class="hp" aria-hidden="true">
+            <label for="company">Company</label>
+            <input id="company" name="company" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+          <p class="field-label"><i class="fa-solid fa-user icon" aria-hidden="true"></i>Name <span class="req">*</span></p>
+          <div class="name-row">
+            <div class="field">
+              <label class="visually-hidden" for="first">First</label>
+              <input id="first" name="firstName" type="text" placeholder="First" required maxlength="60" autocomplete="given-name" />
+            </div>
+            <div class="field">
+              <label class="visually-hidden" for="last">Last</label>
+              <input id="last" name="lastName" type="text" placeholder="Last" required maxlength="60" autocomplete="family-name" />
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label" for="email"><i class="fa-solid fa-envelope icon" aria-hidden="true"></i>Email <span class="req">*</span></label>
+            <input id="email" name="email" type="email" required maxlength="254" autocomplete="email" />
+          </div>
+          <div class="field">
+            <label class="field-label" for="comment"><i class="fa-solid fa-comment icon" aria-hidden="true"></i>Comment <span class="req">*</span></label>
+            <textarea id="comment" name="comment" required maxlength="2000"></textarea>
+          </div>
+          <TurnstileField action="contact" />
+          <p class="form-status" id="form-status" role="status"></p>
+          <button class="btn" type="submit"><span><i class="fa-solid fa-envelope icon" aria-hidden="true"></i>Open email</span></button>
+        </form>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { mountTurnstile, passedSpamCheck } from '../scripts/turnstile';
+
+  const form = document.querySelector<HTMLFormElement>('#contact-form');
+  const status = document.querySelector<HTMLElement>('#form-status');
+
+  function value(data: FormData, name: string) {
+    return String(data.get(name) || '').trim();
+  }
+
+  mountTurnstile(form || document);
+
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!form || !status) return;
+    if (!form.reportValidity()) return;
+    const data = new FormData(form);
+    if (value(data, 'company')) return;
+    const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    if (submit) submit.disabled = true;
+    try {
+      if (!(await passedSpamCheck(form, status))) return;
+      const first = value(data, 'firstName');
+      const last = value(data, 'lastName');
+      const email = value(data, 'email');
+      const comment = value(data, 'comment');
+      const body = [`Name: ${first} ${last}`, `Email: ${email}`, '', comment].join('\n');
+      const href = `mailto:${form.dataset.email}?subject=${encodeURIComponent('Studio message')}&body=${encodeURIComponent(body)}`;
+      status.classList.remove('is-error');
+      status.textContent = 'Your email app is opening. Send the message to finish.';
+      window.location.href = href;
+    } finally {
+      if (submit) submit.disabled = false;
+    }
+  });
+</script>
