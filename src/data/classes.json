@@ -1,0 +1,365 @@
+{
+  "classes": [
+    {
+      "id": "dance-grow-1",
+      "name": "Dance & Grow 1",
+      "ages": "Ages 3 & 4",
+      "sessions": [
+        {
+          "day": "Monday",
+          "start": "17:00",
+          "end": "17:45"
+        },
+        {
+          "day": "Thursday",
+          "start": "16:30",
+          "end": "17:15"
+        }
+      ],
+      "availability": "",
+      "amount": "49",
+      "billing": "month",
+      "summary": "A 45-minute class for 3–4 year olds to give them a head start at social skills while learning dance in playful and creative ways. Introduction into movement, stretching, and ballet.",
+      "recital": "One dance in the recital.",
+      "group": "grow",
+      "hidden": false,
+      "featured": true,
+      "order": 0
+    },
+    {
+      "id": "dance-grow-2",
+      "name": "Dance & Grow 2",
+      "ages": "Ages 5 & 6",
+      "sessions": [
+        {
+          "day": "Monday",
+          "start": "17:00",
+          "end": "18:00"
+        },
+        {
+          "day": "Thursday",
+          "start": "17:15",
+          "end": "18:15"
+        }
+      ],
+      "availability": "",
+      "amount": "64",
+      "billing": "month",
+      "summary": "A 1-hour class that introduces a combination of very basic ballet and tap steps. Introduction into ballet, stretching, and tap. Ballet and tap shoes are required.",
+      "recital": "One dance in the recital.",
+      "group": "grow",
+      "hidden": false,
+      "featured": false,
+      "order": 1
+    },
+    {
+      "id": "pre-bjt-1",
+      "name": "Pre Ballet/Jazz/Tap 1",
+      "ages": "Ages 6 & 7",
+      "sessions": [
+        {
+          "day": "Tuesday",
+          "start": "17:00",
+          "end": "18:00"
+        }
+      ],
+      "availability": "",
+      "amount": "64",
+      "billing": "month",
+      "summary": "A 1-hour combo class of ballet, jazz, and tap. Level I covers basic barre work and more structured ballet and jazz skills than Dance & Grow 2.",
+      "recital": "Two dances in the recital.",
+      "group": "grow",
+      "hidden": false,
+      "featured": true,
+      "order": 2
+    },
+    {
+      "id": "pre-bjt-2",
+      "name": "Pre Ballet/Jazz/Tap 2",
+      "ages": "Ages 7 & 8",
+      "sessions": [
+        {
+          "day": "Tuesday",
+          "start": "18:00",
+          "end": "19:00"
+        }
+      ],
+      "availability": "",
+      "amount": "96",
+      "billing": "month",
+      "summary": "A combo class of ballet, jazz, and tap. Level II builds on the basics of barre work and more structured ballet and jazz skills.",
+      "recital": "Two dances in the recital.",
+      "group": "grow",
+      "hidden": false,
+      "featured": false,
+      "order": 3
+    },
+    {
+      "id": "junior-ballet-lyrical",
+      "name": "Junior Ballet/Lyrical",
+      "ages": "Ages 9–11",
+      "sessions": [
+        {
+          "day": "Wednesday",
+          "start": "19:45",
+          "end": "20:30"
+        }
+      ],
+      "availability": "",
+      "amount": "49",
+      "billing": "month",
+      "summary": "Ballet/lyrical technique including barre warmup, across the floor, and center floor combos.",
+      "recital": "Three dances in the recital when taken with Junior Jazz/Tap.",
+      "group": "ballet",
+      "hidden": false,
+      "featured": true,
+      "order": 0
+    },
+    {
+      "id": "junior-jazz-tap",
+      "name": "Junior Jazz/Tap",
+      "ages": "Ages 9–11",
+      "sessions": [
+        {
+          "day": "Wednesday",
+          "start": "18:30",
+          "end": "19:45"
+        }
+      ],
+      "availability": "",
+      "amount": "79",
+      "billing": "month",
+      "summary": "This class focuses on jazz and tap techniques.",
+      "recital": "Three dances in the recital when taken with Junior Ballet/Lyrical.",
+      "group": "ballet",
+      "hidden": false,
+      "featured": false,
+      "order": 1
+    },
+    {
+      "id": "teen-ballet-lyrical",
+      "name": "Teen Ballet/Lyrical",
+      "ages": "Ages 12 & up",
+      "sessions": [
+        {
+          "day": "Monday",
+          "start": "17:45",
+          "end": "18:30"
+        }
+      ],
+      "availability": "",
+      "amount": "49",
+      "billing": "month",
+      "summary": "Ballet/lyrical technique including barre warmup, across the floor, and center floor combos.",
+      "recital": "Three dances in the recital when taken with Teen Jazz/Tap.",
+      "group": "ballet",
+      "hidden": false,
+      "featured": false,
+      "order": 2
+    },
+    {
+      "id": "teen-jazz-tap",
+      "name": "Teen Jazz/Tap",
+      "ages": "Ages 12 & up",
+      "sessions": [
+        {
+          "day": "Monday",
+          "start": "18:30",
+          "end": "19:45"
+        }
+      ],
+      "availability": "",
+      "amount": "79",
+      "billing": "month",
+      "summary": "This class focuses on jazz and tap techniques.",
+      "recital": "Three dances in the recital when taken with Teen Ballet/Lyrical.",
+      "group": "ballet",
+      "hidden": false,
+      "featured": false,
+      "order": 3
+    },
+    {
+      "id": "tiny-tot-hip-hop",
+      "name": "Tiny Tot Hip Hop",
+      "ages": "Ages 5–7",
+      "sessions": [
+        {
+          "day": "Tuesday",
+          "start": "17:00",
+          "end": "18:00"
+        }
+      ],
+      "availability": "",
+      "amount": "64",
+      "billing": "month",
+      "summary": "One hour. One dance in the recital.",
+      "recital": "",
+      "group": "hip-hop",
+      "hidden": false,
+      "featured": true,
+      "order": 0
+    },
+    {
+      "id": "junior-hip-hop",
+      "name": "Junior Hip Hop",
+      "ages": "Ages 8–11",
+      "sessions": [
+        {
+          "day": "Tuesday",
+          "start": "17:00",
+          "end": "18:00"
+        }
+      ],
+      "availability": "",
+      "amount": "64",
+      "billing": "month",
+      "summary": "One hour. One dance in the recital.",
+      "recital": "",
+      "group": "hip-hop",
+      "hidden": false,
+      "featured": false,
+      "order": 1
+    },
+    {
+      "id": "teen-hip-hop",
+      "name": "Teen Hip Hop",
+      "ages": "Ages 12 & up",
+      "sessions": [
+        {
+          "day": "Tuesday",
+          "start": "19:00",
+          "end": "20:00"
+        }
+      ],
+      "availability": "",
+      "amount": "64",
+      "billing": "month",
+      "summary": "One hour. One dance in the recital.",
+      "recital": "",
+      "group": "hip-hop",
+      "hidden": false,
+      "featured": false,
+      "order": 2
+    },
+    {
+      "id": "jazz-acro",
+      "name": "Jazz/Acro",
+      "ages": "Ages 8 & up",
+      "sessions": [
+        {
+          "day": "Wednesday",
+          "start": "16:30",
+          "end": "17:30"
+        }
+      ],
+      "availability": "",
+      "amount": "64",
+      "billing": "month",
+      "summary": "Combines acrobatic elements with the energetic style of traditional jazz dance.",
+      "recital": "",
+      "group": "more",
+      "hidden": false,
+      "featured": true,
+      "order": 0
+    },
+    {
+      "id": "broadway-baby",
+      "name": "Broadway Baby",
+      "ages": "Ages 7–9",
+      "sessions": [
+        {
+          "day": "Monday",
+          "start": "18:00",
+          "end": "19:00"
+        }
+      ],
+      "availability": "",
+      "amount": "64",
+      "billing": "month",
+      "summary": "A jazz based class filled with Broadway style dancing and music you would typically see on a Broadway stage.",
+      "recital": "",
+      "group": "more",
+      "hidden": false,
+      "featured": true,
+      "order": 1
+    },
+    {
+      "id": "broadway-bound",
+      "name": "Broadway Bound",
+      "ages": "Ages 10 & up",
+      "sessions": [
+        {
+          "day": "Tuesday",
+          "start": "19:30",
+          "end": "20:30"
+        }
+      ],
+      "availability": "",
+      "amount": "64",
+      "billing": "month",
+      "summary": "A jazz based class filled with Broadway style dancing and music you would typically see on a Broadway stage.",
+      "recital": "",
+      "group": "more",
+      "hidden": false,
+      "featured": false,
+      "order": 2
+    },
+    {
+      "id": "junior-pom",
+      "name": "Junior Pom",
+      "ages": "Ages 8–11",
+      "sessions": [
+        {
+          "day": "Wednesday",
+          "start": "17:30",
+          "end": "18:30"
+        }
+      ],
+      "availability": "",
+      "amount": "64",
+      "billing": "month",
+      "summary": "Learning the fundamentals of pom technique, coordination, and confidence in a high-energy environment.",
+      "recital": "",
+      "group": "more",
+      "hidden": false,
+      "featured": true,
+      "order": 3
+    },
+    {
+      "id": "pom-prep",
+      "name": "Pom & Dance Team Prep",
+      "ages": "Ages 12 & up",
+      "sessions": [
+        {
+          "day": "Wednesday",
+          "start": "18:30",
+          "end": "19:30"
+        }
+      ],
+      "availability": "",
+      "amount": "64",
+      "billing": "month",
+      "summary": "Learning the fundamentals of pom technique. Strengthening turns, jumps, and tricks. Gaining knowledge of the collegiate dance team world. Preparation for collegiate dance team clinics, combine events, and auditions.",
+      "recital": "",
+      "group": "more",
+      "hidden": false,
+      "featured": false,
+      "order": 4
+    },
+    {
+      "id": "private-lessons",
+      "name": "Private Lessons",
+      "ages": "By request",
+      "sessions": [],
+      "availability": "Scheduled upon availability",
+      "amount": "30",
+      "billing": "half-hour",
+      "summary": "Request given at the front office. Scheduled upon availability.",
+      "recital": "",
+      "group": "more",
+      "hidden": false,
+      "featured": true,
+      "order": 5
+    }
+  ]
+}

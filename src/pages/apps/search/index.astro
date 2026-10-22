@@ -4,12 +4,15 @@ import { classes } from '../../../data/classes';
 import { albums } from '../../../data/albums';
 import { newsPosts } from '../../../data/news';
 import { site } from '../../../data/site';
+import reviews from '../../../data/reviews.json';
+import qa from '../../../data/qa.json';
+import directions from '../../../data/directions.json';
 
 const entries = [
   ...classes.map((item) => ({
     href: `/classes.html#${item.id}`,
     title: item.name,
-    text: `${item.ages}. ${item.when}. ${item.tuition}`,
+    text: [item.ages, item.days, ...item.sessions.map((session) => `${session.day}, ${session.time}`), item.sessions.length ? '' : item.availability, item.tuition].filter(Boolean).join('. '),
     icon: 'person-running',
     brand: false,
   })),
@@ -18,12 +21,15 @@ const entries = [
   { href: '/registration.html', title: 'Registration', text: site.season, icon: 'clipboard-list', brand: false },
   { href: '/seaside-news.html', title: 'Seaside News', text: newsPosts.map((post) => post.text).join(' '), icon: 'facebook', brand: true },
   { href: '/photos--videos.html', title: 'Photos & Videos', text: albums.map((album) => album.title).join(' '), icon: 'images', brand: false },
+  { href: '/reviews.html', title: 'Reviews', text: reviews.reviews.map((review) => review.text).join(' '), icon: 'star', brand: false },
+  { href: '/q-and-a.html', title: 'Q & A', text: qa.items.map((item) => `${item.question} ${item.answer}`).join(' '), icon: 'circle-question', brand: false },
   { href: '/photos--videos/instagram.html', title: 'Instagram', text: 'Photos from seasidedanceacademy_', icon: 'instagram', brand: true },
   { href: '/contact.html', title: 'Contact', text: `${site.phoneDisplay} ${site.email} ${site.addressLine}`, icon: 'envelope', brand: false },
+  { href: '/directions.html', title: 'Directions', text: `${site.addressLine}. ${directions.note}`, icon: 'diamond-turn-right', brand: false },
 ];
 ---
 
-<Base title="Search | Seaside Dance Academy" description="Search Seaside Dance Academy classes and pages." canonical="/apps/search">
+<Base title="Search | Seaside Dance Academy" description="Search Seaside Dance Academy classes, news, photos, and studio pages." canonical="/apps/search.html" robots="noindex, follow">
   <section class="section">
     <div class="container">
       <h1>Search</h1>

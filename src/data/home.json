@@ -1,0 +1,106 @@
+{
+  "hero": {
+    "image": "/images/hero/duo-blue.jpg",
+    "focus": "center 50%",
+    "line": "Registration now open for our 2026-2027 Season",
+    "choices": [
+      {
+        "title": "Classes",
+        "note": "Classes begin Monday September 14th"
+      },
+      {
+        "title": "Register",
+        "note": "Save a spot for the season."
+      },
+      {
+        "title": "Contact",
+        "note": "Call or send a note."
+      }
+    ]
+  },
+  "welcome": {
+    "place": "Berlin, Maryland",
+    "name": "Seaside Dance Academy",
+    "quote": "We pride ourselves in providing strong TECHNICAL dance training in a supportive & encouraging environment for dancers at all levels.",
+    "call": "Call the studio",
+    "phone": "(410) 629-0377"
+  },
+  "slides": [
+    {
+      "src": "/images/gallery/01.jpg",
+      "focus": "center 50%",
+      "alt": "Seaside Dance Academy dancers in pink costumes performing a group routine on stage"
+    },
+    {
+      "src": "/images/gallery/02.jpg",
+      "focus": "center 50%",
+      "alt": "A Seaside Dance Academy dancer holding a standing split on stage"
+    },
+    {
+      "src": "/images/gallery/03.jpg",
+      "focus": "center 50%",
+      "alt": "Two Seaside Dance Academy dancers performing a lift on a dark stage"
+    },
+    {
+      "src": "/images/gallery/04.jpg",
+      "focus": "center 50%",
+      "alt": "Seaside Dance Academy dancers in red costumes performing at a GROOVE competition"
+    },
+    {
+      "src": "/images/gallery/05.jpg",
+      "focus": "center 50%",
+      "alt": "Seaside Dance Academy dancers in black and green costumes during a stage performance"
+    },
+    {
+      "src": "/images/gallery/06.jpg",
+      "focus": "center 50%",
+      "alt": "Seaside Dance Academy dancers in black costumes holding colorful umbrellas on stage"
+    }
+  ],
+  "studio": {
+    "title": "The studio",
+    "subtitle": "Worcester County since 2001",
+    "paragraphs": [
+      "Seaside Dance Academy opened its doors in September of 2001 and has provided dance education to Worcester County for the past 25 years.",
+      "Seaside Dance Academy is located in the heart of the historical town of Berlin Md surrounded with quaint restaurants and shops. Seaside is only about ten miles from the beaches of Ocean City and Assateague Island. The Academy holds four spacious dance rooms, with 10.000 square feet of space for dancing & creating. Desk staff during operation hours, professional dance staff, four bathrooms, dressing room, hardwood and marly dance floors. All rooms are fully lined in mirrors, dim lighting, disco lights, ballet barres and stereo systems.",
+      "We pride ourselves in providing some of the best dance education in the area. Seaside provides a positive growing environment where dancers can train and succeed to their highest expectations.",
+      "Seaside Dancers welcome you to a start of a great dance year!"
+    ],
+    "facts": [
+      "Opened September 2001",
+      "Four dance rooms",
+      "10,000 square feet",
+      "All levels welcome"
+    ]
+  },
+  "classes": {
+    "title": "Classes",
+    "subtitle": "2026–2027 season",
+    "lines": [
+      "Registration now open for our 2026-2027 Season",
+      "Classes begin Monday September 14th"
+    ],
+    "button": "Full schedule"
+  },
+  "director": {
+    "title": "Studio director",
+    "name": "Lisa Tingle",
+    "photo": "/images/studio/lisa-tingle.jpg",
+    "paragraphs": [
+      "Lisa Tingle, Founder of Seaside Dance Academy, is an award winning dancer, instructor and choreographer. Lisa’s professional training began at an early age at the Wilkes Barre Ballet Theater. Lisa earned a Bachelor of Arts degree with a major in dance from Point Park University, training under Pittsburgh Ballet Artistic Directors Roberto Munzo, Doug Bentz and Judith Leifer. Lisa has performed and worked with many other acclaimed professionals, including David Howard, Francisca Corkle and members of the Joffrey Ballet and performance troupe of New York City Ballet Cynthia Gregory. In 1995, Lisa was chosen for the NFL’s Washington Redskins Cheerleaders dance team. Receiving awards for \"Rookie of the Year\" and \"Best Technique\" Lisa was also chosen as a \"Soloist\" for the Redskinette traveling group and traveled the country performing for the Men and Women of the Armed Forces.",
+      "Lisa opened her own Studio in 2001 and since that time has passed her passion for dance onto her students. A wide variety of talents have bloomed from Seaside Dance Academy including Dancer’s, Singer’s, Teacher’s, Business Men and Women, from Local to National, and even Global. Lisa continues to be proud of her many Alumni and current students at Seaside Dance Academy as they will forever remain in the \"Seaside Family\"."
+    ]
+  },
+  "bands": [
+    {
+      "src": "/images/albums/march-14th-2018/022.jpg",
+      "focus": "center 26%",
+      "alt": "Young Seaside Dance Academy dancers in blue dresses performing a group routine on stage"
+    },
+    {
+      "src": "/images/gallery/01.jpg",
+      "focus": "center 50%",
+      "alt": "Seaside Dance Academy dancers in pink costumes performing a group routine on stage"
+    }
+  ]
+}

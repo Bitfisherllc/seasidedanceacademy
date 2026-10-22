@@ -1,10 +1,14 @@
 ---
+import heroCopy from '../data/hero.json';
+
 interface Props {
   icon: string;
   home?: boolean;
   brand?: boolean;
   image?: string;
   focus?: string;
+  photoKey?: string;
+  quoteKey?: string;
 }
 
 const {
@@ -13,7 +17,15 @@ const {
   brand = false,
   image = '/images/hero/duo-blue.jpg',
   focus = 'center',
+  photoKey,
+  quoteKey = '',
 } = Astro.props;
+const quotes = heroCopy as Record<string, string>;
+const quote = quotes[quoteKey] || '';
+const quoteOnly = !home && !Astro.slots.has('edit');
+const quoteNote = quoteKey === 'gallery'
+  ? 'This quote is on every gallery page.'
+  : 'This quote is only on this page.';
 ---
 
 <section class:list={['hero', { 'hero-home': home }]} aria-label="Seaside Dance Academy">
@@ -25,7 +37,9 @@ const {
       width="1100"
       height="733"
       style={`object-position: ${focus}`}
-      fetchpriority={home ? 'high' : 'auto'}
+      data-home-photo={photoKey || (home ? 'hero.image' : undefined)}
+      data-focus={photoKey || home ? focus : undefined}
+      fetchpriority="high"
       loading="eager"
       decoding="async"
     />
@@ -36,22 +50,80 @@ const {
     <path fill="#ffffff" opacity="0.38" d="M0 72C200 112 440 48 720 82C1000 116 1220 70 1440 90L1440 140L0 140Z"></path>
     <path fill="#ffffff" d="M0 96C240 122 480 74 760 104C1040 132 1240 96 1440 112L1440 140L0 140Z"></path>
   </svg>
+  {Astro.slots.has('edit') && (
+    <div class="home-edit-spot">
+      <slot name="edit" />
+    </div>
+  )}
+  {quoteOnly && (
+    <div class="home-edit-spot">
+      <button class="home-edit-btn" type="button" id="hero-quote-edit">Edit</button>
+    </div>
+  )}
   <div class="hero-inner">
     {!home && (
       <div class="hero-split">
         <i class={`${brand ? 'fa-brands' : 'fa-solid'} fa-${icon} hero-icon`} aria-hidden="true"></i>
         <div>
           <blockquote class="hero-quote">
-            <p>“We pride ourselves in providing strong technical dance training in a supportive and encouraging environment.”</p>
+            <p>“<span data-hero-quote data-hero-key={quoteKey}>{quote}</span>”</p>
           </blockquote>
         </div>
       </div>
     )}
     <slot />
   </div>
+  {quoteOnly && (
+    <dialog class="home-edit-dialog" id="hero-quote-dialog">
+      <form id="hero-quote-form">
+        <h2>Quote</h2>
+        <p class="home-edit-note">{quoteNote}</p>
+        <div id="hero-quote-fields"></div>
+        <p class="home-edit-status" id="hero-quote-status" role="status"></p>
+        <div class="home-edit-actions">
+          <button class="home-edit-save" type="button" id="hero-quote-save">Save</button>
+          <button class="home-edit-cancel" type="button" id="hero-quote-cancel">Cancel</button>
+        </div>
+      </form>
+    </dialog>
+  )}
 </section>
 
 <script>
+  import { appendQuoteField, saveHeroQuote } from '../scripts/page-editor.js';
+
+  const quoteDialog = document.querySelector<HTMLDialogElement>('#hero-quote-dialog');
+  const quoteFields = document.querySelector<HTMLElement>('#hero-quote-fields');
+  const quoteStatus = document.querySelector<HTMLElement>('#hero-quote-status');
+
+  document.querySelector('#hero-quote-edit')?.addEventListener('click', () => {
+    if (!quoteDialog || !quoteFields) return;
+    if (quoteStatus) quoteStatus.textContent = '';
+    quoteFields.replaceChildren();
+    appendQuoteField(quoteFields);
+    quoteDialog.showModal();
+  });
+
+  document.querySelector('#hero-quote-cancel')?.addEventListener('click', () => quoteDialog?.close());
+
+  document.querySelector('#hero-quote-save')?.addEventListener('click', async () => {
+    const input = quoteDialog?.querySelector<HTMLTextAreaElement>('textarea[name="heroQuote"]');
+    const save = document.querySelector<HTMLButtonElement>('#hero-quote-save');
+    if (!input || !quoteStatus) return;
+    if (save) save.disabled = true;
+    quoteStatus.textContent = 'Saving…';
+    try {
+      const payload = await saveHeroQuote(input.value);
+      quoteStatus.textContent = payload.live
+        ? 'Saved. On the live site this shows for everyone after the site rebuilds.'
+        : 'Saved.';
+    } catch (error) {
+      quoteStatus.textContent = error instanceof Error ? error.message : 'The quote could not save.';
+    } finally {
+      if (save) save.disabled = false;
+    }
+  });
+
   const hero = document.querySelector<HTMLElement>('.hero');
   const layer = hero?.querySelector<HTMLElement>('.hero-parallax');
   const motion = window.matchMedia('(prefers-reduced-motion: reduce)');

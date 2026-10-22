@@ -1,7 +1,23 @@
+import { loadEnv } from 'vite';
 import { defineConfig } from 'astro/config';
+
+const fileEnv = loadEnv(process.env.NODE_ENV === 'production' ? 'production' : 'development', process.cwd(), '');
+for (const [key, value] of Object.entries(fileEnv)) {
+  if (!process.env[key] && value) process.env[key] = value;
+}
 import { imageForId as facebookImage, feedForClient as facebookFeed } from './api/facebook-feed.js';
 import { feedForClient, imageForCode } from './api/instagram-feed.js';
 import { verifyTurnstile } from './api/turnstile-verify.js';
+import { handleStudio } from './api/studio-classes.js';
+import { handleHome } from './api/home-page.js';
+import { handlePhotos } from './api/photos-page.js';
+import { handleDirections } from './api/directions-page.js';
+import { handleClasses } from './api/classes-page.js';
+import { handleNews } from './api/news-page.js';
+import { handleReviewsPage } from './api/reviews-page.js';
+import { handleHeroQuote } from './api/hero-quote.js';
+import { handleQa } from './api/qa-page.js';
+import { reviewsForClient } from './api/google-reviews.js';
 
 function readBody(req) {
   return new Promise((resolve, reject) => {
@@ -43,6 +59,49 @@ export default defineConfig({
               res.setHeader('Content-Type', image.contentType);
               res.setHeader('Cache-Control', 'public, max-age=3600');
               res.end(image.body);
+              return;
+            }
+            if (path === '/api/studio-classes') {
+              await handleStudio(req, res);
+              return;
+            }
+            if (path === '/api/home-page') {
+              await handleHome(req, res);
+              return;
+            }
+            if (path === '/api/photos-page') {
+              await handlePhotos(req, res);
+              return;
+            }
+            if (path === '/api/directions-page') {
+              await handleDirections(req, res);
+              return;
+            }
+            if (path === '/api/classes-page') {
+              await handleClasses(req, res);
+              return;
+            }
+            if (path === '/api/news-page') {
+              await handleNews(req, res);
+              return;
+            }
+            if (path === '/api/reviews-page') {
+              await handleReviewsPage(req, res);
+              return;
+            }
+            if (path === '/api/hero-quote') {
+              await handleHeroQuote(req, res);
+              return;
+            }
+            if (path === '/api/qa-page') {
+              await handleQa(req, res);
+              return;
+            }
+            if (path === '/api/google-reviews') {
+              const payload = await reviewsForClient();
+              res.setHeader('Content-Type', 'application/json; charset=utf-8');
+              res.setHeader('Cache-Control', 'public, max-age=3600');
+              res.end(JSON.stringify(payload));
               return;
             }
             if (path === '/api/facebook') {

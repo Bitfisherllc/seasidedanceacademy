@@ -6,6 +6,7 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
+import BackToTop from '../components/BackToTop.astro';
 import { site } from '../data/site';
 
 interface Props {
@@ -13,11 +14,72 @@ interface Props {
   description?: string;
   canonical: string;
   crumb?: string;
+  robots?: string;
+  image?: string;
 }
 
-const { title, description = site.description, canonical, crumb } = Astro.props;
+const { title, description = site.description, canonical, crumb, robots, image = '/images/hero/duo-blue.jpg' } = Astro.props;
 const canonicalUrl = new URL(canonical, site.url).href;
-const ogImage = new URL('/images/hero/duo-blue.jpg', site.url).href;
+const ogImage = new URL(image, site.url).href;
+const logo = new URL('/images/logos/logo.png', site.url).href;
+const studioId = new URL('/#studio', site.url).href;
+const websiteId = new URL('/#website', site.url).href;
+const graph = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'DanceSchool',
+      '@id': studioId,
+      name: site.name,
+      url: site.url,
+      image: logo,
+      logo,
+      telephone: '+1-410-629-0377',
+      email: site.email,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: site.street,
+        addressLocality: site.city,
+        addressRegion: 'MD',
+        postalCode: site.postal,
+        addressCountry: 'US',
+      },
+      founder: {
+        '@type': 'Person',
+        name: site.director,
+      },
+      foundingDate: '2001-09',
+      areaServed: {
+        '@type': 'AdministrativeArea',
+        name: 'Worcester County, Maryland',
+      },
+      sameAs: [site.facebook, site.instagram, site.youtube],
+    },
+    {
+      '@type': 'WebSite',
+      '@id': websiteId,
+      name: site.name,
+      url: site.url,
+      publisher: { '@id': studioId },
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: `${site.url}/apps/search.html?q={search_term_string}`,
+        'query-input': 'required name=search_term_string',
+      },
+    },
+    {
+      '@type': 'WebPage',
+      '@id': canonicalUrl,
+      url: canonicalUrl,
+      name: title,
+      description,
+      inLanguage: 'en',
+      isPartOf: { '@id': websiteId },
+      about: { '@id': studioId },
+      primaryImageOfPage: ogImage,
+    },
+  ],
+};
 ---
 
 <!doctype html>
@@ -27,13 +89,23 @@ const ogImage = new URL('/images/hero/duo-blue.jpg', site.url).href;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="robots" content={robots || 'index, follow, max-image-preview:large'} />
     <link rel="canonical" href={canonicalUrl} />
-    <link rel="icon" href="/images/logos/mark.jpeg" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" href="/favicon-32.png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:image" content={ogImage} />
     <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <script type="application/ld+json" set:html={JSON.stringify(graph)} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
@@ -48,5 +120,32 @@ const ogImage = new URL('/images/hero/duo-blue.jpg', site.url).href;
       </main>
       <Footer />
     </div>
+    <BackToTop />
+    <script>
+      const siteHost = location.hostname.replace(/^www\./, '');
+
+      function markOutside(link: HTMLAnchorElement) {
+        const href = link.getAttribute('href') || '';
+        if (!/^https?:\/\//i.test(href)) return;
+        let host = '';
+        try {
+          host = new URL(href, location.href).hostname.replace(/^www\./, '');
+        } catch {
+          return;
+        }
+        if (!host || host === siteHost) return;
+        link.target = '_blank';
+        const rel = new Set((link.rel || '').split(/\s+/).filter(Boolean));
+        rel.add('noopener');
+        rel.add('noreferrer');
+        link.rel = [...rel].join(' ');
+      }
+
+      document.querySelectorAll<HTMLAnchorElement>('a[href]').forEach(markOutside);
+      document.addEventListener('click', (event) => {
+        const link = event.target instanceof Element ? event.target.closest('a[href]') : null;
+        if (link instanceof HTMLAnchorElement) markOutside(link);
+      });
+    </script>
   </body>
 </html>

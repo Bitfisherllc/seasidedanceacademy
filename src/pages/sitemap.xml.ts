@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { albumPhotos } from '../data/album-photos';
+import { albums } from '../data/albums';
 import { site } from '../data/site';
 
 const paths = [
@@ -8,9 +8,12 @@ const paths = [
   '/registration.html',
   '/seaside-news.html',
   '/photos--videos.html',
+  '/reviews.html',
+  '/q-and-a.html',
   '/photos--videos/instagram.html',
-  ...albumPhotos.map((album) => `/photos--videos/${album.slug}.html`),
+  ...albums.map((album) => album.href),
   '/contact.html',
+  '/directions.html',
 ];
 
 export const GET: APIRoute = () => {

@@ -2,20 +2,31 @@
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import { pages } from '../data/site';
-import { albums } from '../data/albums';
+import { albums, gallery, photosPage } from '../data/albums';
 import { instagramPosts } from '../data/instagram';
+
+const photoAlbums = [
+  { title: 'Gallery', images: gallery.map((item) => item.src) },
+  ...albums.map((album) => ({
+    title: album.title,
+    images: album.images.length ? album.images : [album.image],
+  })),
+];
 ---
 
 <Base title={pages.photos.title} description={pages.photos.description} canonical="/photos--videos.html">
-  <Hero slot="hero" icon="images" image="/images/hero/duo-sequin.jpg" focus="center 18%" />
+  <Hero slot="hero" icon="images" image={photosPage.banner.src} focus={photosPage.banner.focus} photoKey="banner" quoteKey="photos">
+    <button slot="edit" class="home-edit-btn" type="button" data-edit="banner">Edit</button>
+  </Hero>
   <section class="section">
-    <div class="container">
+    <div class="container home-block">
+      <button class="home-edit-btn" type="button" data-edit="title">Edit</button>
       <h1 class="center">
-        <span class="fs-32">Photos &amp; Videos</span>
+        <span class="fs-32" data-photos-title>{photosPage.title}</span>
       </h1>
       <a class="ig-category" href="/photos--videos/instagram.html">
         <span class="ig-category-photo">
-          <img src={instagramPosts[0].image} data-ig-cover alt="" width="640" height="640" />
+          <img src={instagramPosts[0].image} data-ig-cover alt="Latest photo from the Seaside Dance Academy Instagram" width="640" height="640" />
           <i class="fa-brands fa-instagram ig-mark" aria-hidden="true"></i>
         </span>
         <span class="ig-category-copy">
@@ -23,22 +34,40 @@ import { instagramPosts } from '../data/instagram';
           <span class="copy">Photos from @seasidedanceacademy_</span>
         </span>
       </a>
+      <div class="gallery-tools">
+        <button class="gallery-add" type="button" data-edit="new">Add a gallery</button>
+      </div>
       <div class="album-grid">
         {albums.map((album) => (
-          <a class="album-card" href={album.href}>
-            <span class="album-photo">
-              <img src={album.image} alt="" width="480" height="320" loading="lazy" />
-              {album.video && <i class="fa-solid fa-play album-play" aria-hidden="true"></i>}
-            </span>
-            <span class="album-body">
-              <span class="album-title">{album.title}</span>
-              <span class="album-date"><i class="fa-solid fa-calendar-days icon" aria-hidden="true"></i>{album.date}</span>
-            </span>
-          </a>
+          <div class="album-slot">
+            <button class="home-edit-btn" type="button" data-edit="album" data-slug={album.slug}>Edit</button>
+            <a class="album-card" href={album.href}>
+              <span class="album-photo">
+                <img src={album.image} alt={album.title} width="480" height="320" loading="lazy" style={`object-position: ${album.focus}`} data-focus={album.focus} data-cover />
+                {album.video && <i class="fa-solid fa-play album-play" aria-hidden="true"></i>}
+              </span>
+              <span class="album-body">
+                <span class="album-title" data-album-title>{album.title}</span>
+                <span class="album-date"><i class="fa-solid fa-calendar-days icon" aria-hidden="true"></i><span data-album-date>{album.date}</span></span>
+              </span>
+            </a>
+          </div>
         ))}
       </div>
     </div>
   </section>
+  <dialog class="home-edit-dialog" id="photos-edit-dialog">
+    <form id="photos-edit-form">
+      <h2 id="photos-edit-title">Edit</h2>
+      <p class="home-edit-note" id="photos-edit-note"></p>
+      <div id="photos-edit-fields"></div>
+      <p class="home-edit-status" id="photos-edit-status" role="status"></p>
+      <div class="home-edit-actions">
+        <button class="home-edit-save" type="submit">Save</button>
+        <button class="home-edit-cancel" type="button" id="photos-edit-cancel">Cancel</button>
+      </div>
+    </form>
+  </dialog>
 </Base>
 
 <script>
@@ -50,4 +79,326 @@ import { instagramPosts } from '../data/instagram';
       if (image && cover instanceof HTMLImageElement) cover.src = image;
     })
     .catch(() => {});
+</script>
+
+<script define:vars={{ photoAlbums }}>
+  const dialog = document.querySelector('#photos-edit-dialog');
+  const form = document.querySelector('#photos-edit-form');
+  const fields = document.querySelector('#photos-edit-fields');
+  const title = document.querySelector('#photos-edit-title');
+  const note = document.querySelector('#photos-edit-note');
+  const status = document.querySelector('#photos-edit-status');
+  let mode = '';
+  let slug = '';
+  let pendingUpload = null;
+
+  function focusAmount(value) {
+    const match = String(value || '').match(/(\d{1,2})%/);
+    const amount = match ? Number(match[1]) : 50;
+    return Math.max(10, Math.min(90, amount));
+  }
+
+  function addPhoto(src, focus, uploadKind) {
+    pendingUpload = null;
+    const preview = document.createElement('div');
+    preview.className = uploadKind === 'banner' ? 'hero-preview' : 'band-preview';
+    const previewImage = document.createElement('img');
+    previewImage.alt = '';
+    previewImage.src = src || '';
+    preview.append(previewImage);
+    const sliderLabel = document.createElement('label');
+    sliderLabel.className = 'home-edit-label';
+    sliderLabel.append(document.createTextNode('Move the photo'));
+    const slider = document.createElement('input');
+    slider.type = 'range';
+    slider.name = 'focus';
+    slider.min = '10';
+    slider.max = '90';
+    slider.value = String(focusAmount(focus));
+    const place = () => {
+      previewImage.style.objectPosition = `center ${slider.value}%`;
+    };
+    slider.addEventListener('input', place);
+    place();
+    sliderLabel.append(slider);
+    const albumLabel = document.createElement('label');
+    albumLabel.className = 'home-edit-label';
+    albumLabel.append(document.createTextNode('Photos on the site'));
+    const albumPick = document.createElement('select');
+    albumPick.name = 'album';
+    const blank = document.createElement('option');
+    blank.value = '';
+    blank.textContent = 'Choose an album';
+    albumPick.append(blank);
+    photoAlbums.forEach((album, albumIndex) => {
+      const option = document.createElement('option');
+      option.value = String(albumIndex);
+      option.textContent = album.title;
+      albumPick.append(option);
+    });
+    const picks = document.createElement('div');
+    picks.className = 'band-picks';
+    albumPick.addEventListener('change', () => {
+      picks.replaceChildren();
+      const album = photoAlbums[Number(albumPick.value)];
+      if (!album) return;
+      album.images.forEach((imageSrc) => {
+        const choice = document.createElement('button');
+        choice.type = 'button';
+        choice.dataset.src = imageSrc;
+        const thumb = document.createElement('img');
+        thumb.src = imageSrc;
+        thumb.alt = '';
+        choice.append(thumb);
+        choice.addEventListener('click', () => {
+          pendingUpload = null;
+          const filePick = form?.querySelector('input[name="upload"]');
+          if (filePick) filePick.value = '';
+          picks.querySelectorAll('button').forEach((button) => button.classList.remove('is-on'));
+          choice.classList.add('is-on');
+          previewImage.src = imageSrc;
+          previewImage.dataset.chosen = imageSrc;
+        });
+        picks.append(choice);
+      });
+    });
+    albumLabel.append(albumPick);
+    const uploadLabel = document.createElement('label');
+    uploadLabel.className = 'home-edit-label';
+    uploadLabel.append(document.createTextNode('Or upload a photo'));
+    const upload = document.createElement('input');
+    upload.type = 'file';
+    upload.name = 'upload';
+    upload.accept = 'image/jpeg,image/png,image/webp';
+    upload.addEventListener('change', () => {
+      const file = upload.files?.[0];
+      if (!file) return;
+      if (file.size > 5 * 1024 * 1024) {
+        if (status) status.textContent = 'Use a photo under 5 MB.';
+        upload.value = '';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = String(reader.result || '');
+        pendingUpload = { kind: uploadKind, slug, type: file.type, data: result.split(',')[1] || '' };
+        previewImage.src = result;
+        delete previewImage.dataset.chosen;
+        picks.querySelectorAll('button').forEach((button) => button.classList.remove('is-on'));
+      };
+      reader.readAsDataURL(file);
+    });
+    uploadLabel.append(upload);
+    fields.append(preview, sliderLabel, albumLabel, picks, uploadLabel);
+  }
+
+  function addText(name, label, value, max, long) {
+    const wrap = document.createElement('label');
+    wrap.className = 'home-edit-label';
+    wrap.append(document.createTextNode(label));
+    const input = document.createElement(long ? 'textarea' : 'input');
+    input.name = name;
+    input.required = true;
+    input.maxLength = max;
+    input.value = value;
+    if (input instanceof HTMLTextAreaElement) input.rows = 3;
+    wrap.append(input);
+    fields.append(wrap);
+  }
+
+  function addHeroQuote() {
+    const wrap = document.createElement('label');
+    wrap.className = 'home-edit-label';
+    wrap.append(document.createTextNode('Quote'));
+    const input = document.createElement('textarea');
+    input.name = 'heroQuote';
+    input.required = true;
+    input.maxLength = 280;
+    input.rows = 4;
+    input.value = document.querySelector('[data-hero-quote]')?.textContent?.trim() || '';
+    wrap.append(input);
+    fields.append(wrap);
+  }
+
+  function openEditor(kind, albumSlug) {
+    if (!dialog || !fields || !form) return;
+    mode = kind;
+    slug = albumSlug || '';
+    pendingUpload = null;
+    if (status) status.textContent = '';
+    fields.replaceChildren();
+    if (kind === 'banner') {
+      const image = document.querySelector('[data-home-photo="banner"]');
+      if (title) title.textContent = 'Banner';
+      if (note) note.textContent = 'The banner stays the same size. Slide the photo so faces stay in view. This quote is only on this page.';
+      addPhoto(image?.src || '', image?.dataset.focus || '', 'banner');
+      addHeroQuote();
+    } else if (kind === 'title') {
+      if (title) title.textContent = 'Heading';
+      if (note) note.textContent = 'This is the title under the banner.';
+      addText('title', 'Heading', document.querySelector('[data-photos-title]')?.textContent?.trim() || '', 60, false);
+    } else if (kind === 'album') {
+      const slot = document.querySelector(`[data-slug="${albumSlug}"]`)?.closest('.album-slot');
+      const image = slot?.querySelector('[data-cover]');
+      if (title) title.textContent = 'Album';
+      if (note) note.textContent = 'The card stays the same size. Open the gallery to add or remove photos.';
+      addPhoto(image?.src || '', image?.dataset.focus || '', 'cover');
+      addText('albumTitle', 'Title', slot?.querySelector('[data-album-title]')?.textContent?.trim() || '', 180, true);
+      addText('albumDate', 'Date', slot?.querySelector('[data-album-date]')?.textContent?.trim() || '', 40, false);
+    }
+    if (kind === 'new') {
+      if (title) title.textContent = 'New gallery';
+      if (note) note.textContent = 'Add a name, a date, and one photo. You can add more photos after you open the gallery.';
+      addText('galleryTitle', 'Title', '', 180, false);
+      addText('galleryDate', 'Date', '', 40, false);
+      const uploadLabel = document.createElement('label');
+      uploadLabel.className = 'home-edit-label';
+      uploadLabel.append(document.createTextNode('Photo'));
+      const upload = document.createElement('input');
+      upload.type = 'file';
+      upload.name = 'upload';
+      upload.accept = 'image/jpeg,image/png,image/webp';
+      upload.required = true;
+      upload.addEventListener('change', () => {
+        const file = upload.files?.[0];
+        if (!file) return;
+        if (file.size > 5 * 1024 * 1024) {
+          if (status) status.textContent = 'Use a photo under 5 MB.';
+          upload.value = '';
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+          pendingUpload = { kind: 'gallery', type: file.type, data: String(reader.result || '').split(',')[1] || '' };
+        };
+        reader.readAsDataURL(file);
+      });
+      uploadLabel.append(upload);
+      fields.append(uploadLabel);
+    }
+    dialog.showModal();
+  }
+
+  document.querySelectorAll('[data-edit]').forEach((button) => {
+    button.addEventListener('click', () => openEditor(button.dataset.edit || '', button.dataset.slug || ''));
+  });
+
+  document.querySelector('#photos-edit-cancel')?.addEventListener('click', () => dialog?.close());
+
+  function photoPath(fallback) {
+    const previewImage = form.querySelector('.hero-preview img, .band-preview img');
+    const chosen = previewImage?.dataset.chosen || fallback || '';
+    if (!chosen || chosen.startsWith('data:')) return new URL(fallback || '', location.origin).pathname;
+    return new URL(chosen, location.origin).pathname;
+  }
+
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!mode || !status) return;
+    const body = {};
+    if (mode === 'title') {
+      const input = form.elements.namedItem('title');
+      body.title = input instanceof HTMLInputElement ? input.value : '';
+    }
+    if (mode === 'banner') {
+      const image = document.querySelector('[data-home-photo="banner"]');
+      const slider = form.querySelector('input[name="focus"]');
+      body.banner = {
+        src: photoPath(image?.getAttribute('src') || ''),
+        focus: `center ${slider?.value || '50'}%`,
+      };
+    }
+    if (mode === 'new') {
+      const galleryTitle = form.elements.namedItem('galleryTitle');
+      const galleryDate = form.elements.namedItem('galleryDate');
+      if (!pendingUpload) {
+        status.textContent = 'Add a photo for the new gallery.';
+        return;
+      }
+      body.gallery = {
+        title: galleryTitle instanceof HTMLInputElement ? galleryTitle.value : '',
+        date: galleryDate instanceof HTMLInputElement ? galleryDate.value : '',
+      };
+    }
+    if (mode === 'album') {
+      const slot = document.querySelector(`[data-slug="${slug}"]`)?.closest('.album-slot');
+      const image = slot?.querySelector('[data-cover]');
+      const slider = form.querySelector('input[name="focus"]');
+      const albumTitle = form.elements.namedItem('albumTitle');
+      const albumDate = form.elements.namedItem('albumDate');
+      body.album = {
+        slug,
+        title: albumTitle instanceof HTMLTextAreaElement || albumTitle instanceof HTMLInputElement ? albumTitle.value : '',
+        date: albumDate instanceof HTMLInputElement ? albumDate.value : '',
+        cover: photoPath(image?.getAttribute('src') || ''),
+        focus: `center ${slider?.value || '50'}%`,
+      };
+    }
+    const save = form.querySelector('.home-edit-save');
+    if (save) save.disabled = true;
+    status.textContent = 'Saving…';
+    try {
+      const response = await fetch('/api/photos-page', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...body, image: pendingUpload }),
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error || 'The photos page could not save.');
+      if (mode === 'new' && payload.slug) {
+        location.assign(`/photos--videos/${payload.slug}.html`);
+        return;
+      }
+      if (mode === 'title' && payload.page?.title) {
+        const heading = document.querySelector('[data-photos-title]');
+        if (heading) heading.textContent = payload.page.title;
+      }
+      if (mode === 'banner' && payload.page?.banner) {
+        const image = document.querySelector('[data-home-photo="banner"]');
+        if (image) {
+          const src = payload.page.banner.src;
+          image.src = src.includes('/photos-banner.') ? `${src}?v=${Date.now()}` : src;
+          image.style.objectPosition = payload.page.banner.focus;
+          image.dataset.focus = payload.page.banner.focus;
+        }
+        const quoteInput = form.querySelector('textarea[name="heroQuote"]');
+        if (quoteInput instanceof HTMLTextAreaElement) {
+          const quoteNode = document.querySelector('[data-hero-quote]');
+          const quoteKey = quoteNode?.dataset.heroKey || '';
+          const quoteResponse = await fetch('/api/hero-quote', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ values: { [quoteKey]: quoteInput.value } }),
+          });
+          const quotePayload = await quoteResponse.json();
+          if (!quoteResponse.ok) throw new Error(quotePayload.error || 'The quote could not save.');
+          if (quoteNode && quoteKey && quotePayload.page?.[quoteKey]) quoteNode.textContent = quotePayload.page[quoteKey];
+        }
+      }
+      if (mode === 'album' && payload.page?.albums?.[slug]) {
+        const saved = payload.page.albums[slug];
+        const slot = document.querySelector(`[data-slug="${slug}"]`)?.closest('.album-slot');
+        const image = slot?.querySelector('[data-cover]');
+        const name = slot?.querySelector('[data-album-title]');
+        const date = slot?.querySelector('[data-album-date]');
+        if (name) name.textContent = saved.title;
+        if (date) date.textContent = saved.date;
+        if (image) {
+          const src = saved.cover;
+          image.src = src.includes('/albums/covers/') ? `${src}?v=${Date.now()}` : src;
+          image.style.objectPosition = saved.focus;
+          image.dataset.focus = saved.focus;
+          image.alt = saved.title || '';
+        }
+      }
+      pendingUpload = null;
+      status.textContent = payload.live
+        ? 'Saved. On the live site this shows for everyone after the site rebuilds.'
+        : 'Saved.';
+    } catch (error) {
+      status.textContent = error instanceof Error ? error.message : 'The photos page could not save.';
+    } finally {
+      if (save) save.disabled = false;
+    }
+  });
 </script>

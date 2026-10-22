@@ -3,6 +3,10 @@ import { nav, site } from '../data/site';
 
 const raw = Astro.url.pathname;
 const current = raw.replace(/\/index\.html$/, '/').replace(/\.html$/, '').replace(/\/$/, '') || '/';
+const menu = [
+  ...nav.filter((item) => item.href !== '/registration.html' && item.href !== '/contact.html'),
+  { href: '/directions.html', label: 'Directions', icon: 'diamond-turn-right', brand: false },
+];
 
 function isCurrent(href: string) {
   const normalized = href.replace(/\.html$/, '').replace(/\/$/, '') || '/';
@@ -14,7 +18,7 @@ function isCurrent(href: string) {
 <div class="mobile-nav" id="mobile-nav" aria-hidden="true" inert>
   <nav aria-label="Mobile">
     <ul>
-      {nav.map((item) => (
+      {menu.map((item) => (
         <li>
           <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
             <i class={`${item.brand ? 'fa-brands' : 'fa-solid'} fa-${item.icon} icon`} aria-hidden="true"></i>{item.label}
@@ -36,6 +40,7 @@ function isCurrent(href: string) {
       <div class="brand-actions">
         <a class="btn header-btn" href={`tel:${site.phoneTel}`}><span><i class="fa-solid fa-phone icon" aria-hidden="true"></i>Call</span></a>
         <a class="btn header-btn" href="/contact.html"><span><i class="fa-solid fa-envelope icon" aria-hidden="true"></i>Contact</span></a>
+        <a class="btn header-btn header-admin" href="/studio.html" aria-label="Admin"><span><i class="fa-solid fa-user-gear icon" aria-hidden="true"></i></span></a>
       </div>
     </div>
   </div>
@@ -47,10 +52,11 @@ function isCurrent(href: string) {
       <div class="mobile-actions">
         <a class="btn header-btn" href={`tel:${site.phoneTel}`}><span><i class="fa-solid fa-phone icon" aria-hidden="true"></i>Call</span></a>
         <a class="btn header-btn" href="/contact.html"><span><i class="fa-solid fa-envelope icon" aria-hidden="true"></i>Contact</span></a>
+        <a class="btn header-btn header-admin" href="/studio.html" aria-label="Admin"><span><i class="fa-solid fa-user-gear icon" aria-hidden="true"></i></span></a>
       </div>
       <nav class="desktop-nav" aria-label="Primary">
         <ul>
-          {nav.map((item) => (
+          {menu.map((item) => (
             <li>
               <a href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
                 <i class={`${item.brand ? 'fa-brands' : 'fa-solid'} fa-${item.icon} icon`} aria-hidden="true"></i>{item.label}
@@ -69,6 +75,44 @@ function isCurrent(href: string) {
       </button>
     </div>
   </div>
+  <div class="admin-bar" hidden>
+    <label class="admin-switch">
+      <input class="visually-hidden" type="checkbox" id="admin-visitor" />
+      <span class="admin-switch-ui" aria-hidden="true"></span>
+      View as visitor
+    </label>
+    <button class="admin-bar-btn" type="button" id="admin-help">How to use admin</button>
+    <button class="admin-bar-btn" type="button" id="admin-logout">Log out</button>
+  </div>
+  <dialog class="admin-help" id="admin-help-dialog">
+    <form method="dialog">
+      <button type="submit" aria-label="Close"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+    </form>
+    <h2>How to use admin</h2>
+    <ul>
+      <li>Red Edit buttons change the words or photo in that spot. The layout stays the same.</li>
+      <li>On the home page, Edit on the top banner changes the photo, the season line, and the three boxes. Those boxes still open the same pages.</li>
+      <li>Edit on Welcome changes the headings, the paragraph, and the call label. The phone number stays the studio number.</li>
+      <li>Edit on The studio changes the headings, the four paragraphs, and the four points under them.</li>
+      <li>Edit on the slideshow changes the photos that play there. Each photo has a description. Edit on each wide photo changes that strip and its description. The frames stay the same size.</li>
+      <li>Edit on the home page classes section changes the heading, the two lines, and the button. Change the class cards on the Classes page.</li>
+      <li>Edit on Studio director changes the photo, the heading, the name, and the two paragraphs.</li>
+      <li>Each page banner has its own quote. Edit on that banner changes only that quote. Gallery pages share one quote. The home page banner does not use one.</li>
+      <li>On Classes, Edit changes the banner photo and the words above the cards, including the ballet and hip hop headings.</li>
+      <li>Add a class, Edit, and Delete change a class. A class needs a name, ages, a day with a start and end time or a note when the day is not set, a price per month, per hour, or per half hour, a section, and a description. Show on the home page puts that class on the home page.</li>
+      <li>Open the class desk to hide a class or move it up or down. A hidden class stays in the desk and leaves the public schedule, the home page, search, and registration.</li>
+      <li>On Seaside News, Edit changes the banner, the heading, the two paragraphs, and the button label. The Facebook posts stay, and the button still opens Facebook.</li>
+      <li>On Photos &amp; Videos, Edit changes the banner, the page heading, and an album’s title, date, and cover. Add a gallery starts a new album. Inside a gallery, Add a photo can include a description, and Remove takes a picture out. The Instagram pictures come from Instagram.</li>
+      <li>On Reviews, Edit changes the banner, the headings, the paragraph, and the two button labels. The Google rating and written reviews stay, and both buttons still open Google.</li>
+      <li>On Directions, Edit changes the banner, the heading, the paragraph, the button label, and the hours. The address, phone, email, and map stay, and Get directions still opens Google Maps.</li>
+      <li>On Q &amp; A, Edit changes the banner and the introduction. Add a question, Edit, and Delete change the questions and answers.</li>
+      <li>On Contact, Registration, Instagram, and inside a gallery, Edit on the banner changes that page’s quote. A gallery quote appears on every gallery page.</li>
+      <li>View as visitor hides the editing buttons and brings the admin button back. This bar stays so you can switch back.</li>
+      <li>Log out ends the session on this browser.</li>
+      <li>On the live site, a save shows up after the site rebuilds.</li>
+    </ul>
+    <p><a class="btn" href="/studio.html"><span><i class="fa-solid fa-user-gear icon" aria-hidden="true"></i>Class desk</span></a></p>
+  </dialog>
 </header>
 
 <script>
@@ -105,4 +149,75 @@ function isCurrent(href: string) {
   };
   markStuck();
   window.addEventListener('scroll', markStuck, { passive: true });
+
+  const adminBar = document.querySelector<HTMLElement>('.admin-bar');
+  const visitorToggle = document.querySelector<HTMLInputElement>('#admin-visitor');
+  const helpDialog = document.querySelector<HTMLDialogElement>('#admin-help-dialog');
+  const visitorKey = 'studio-visitor';
+  const onDesk = () => location.pathname.replace(/\.html$/, '').endsWith('/studio');
+
+  function showAdmin(signedIn: boolean) {
+    const preview = signedIn && sessionStorage.getItem(visitorKey) === '1' && !onDesk();
+    document.body.classList.toggle('studio-in', signedIn);
+    document.body.classList.toggle('studio-visitor', preview);
+    if (adminBar) adminBar.hidden = !signedIn;
+    if (visitorToggle) visitorToggle.checked = preview;
+    placeAdminBar();
+  }
+
+  function placeAdminBar() {
+    const height = adminBar && !adminBar.hidden ? adminBar.offsetHeight : 0;
+    document.documentElement.style.setProperty('--admin-bar-h', `${height}px`);
+  }
+
+  async function refreshAdmin() {
+    try {
+      const response = await fetch('/api/studio-classes');
+      showAdmin(response.ok);
+    } catch {
+      showAdmin(false);
+    }
+  }
+
+  visitorToggle?.addEventListener('change', () => {
+    if (visitorToggle.checked) {
+      sessionStorage.setItem(visitorKey, '1');
+      if (onDesk()) {
+        location.href = '/';
+        return;
+      }
+      showAdmin(true);
+      return;
+    }
+    sessionStorage.removeItem(visitorKey);
+    showAdmin(true);
+  });
+
+  document.querySelector('#admin-help')?.addEventListener('click', () => {
+    helpDialog?.showModal();
+  });
+
+  document.querySelector('#admin-logout')?.addEventListener('click', async () => {
+    await fetch('/api/studio-classes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'logout' }),
+    });
+    sessionStorage.removeItem(visitorKey);
+    location.reload();
+  });
+
+  document.querySelectorAll<HTMLAnchorElement>('.header-admin').forEach((link) => {
+    link.addEventListener('click', () => sessionStorage.removeItem(visitorKey));
+  });
+
+  window.addEventListener('studio-session', () => {
+    refreshAdmin();
+  });
+
+  if (onDesk()) sessionStorage.removeItem(visitorKey);
+  if (adminBar && 'ResizeObserver' in window) {
+    new ResizeObserver(placeAdminBar).observe(adminBar);
+  }
+  refreshAdmin();
 </script>

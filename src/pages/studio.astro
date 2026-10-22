@@ -1,0 +1,410 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="Class desk | Seaside Dance Academy"
+  description="Studio staff add, edit, hide, and delete classes."
+  canonical="/studio.html"
+  robots="noindex, nofollow"
+>
+  <section class="section">
+    <div class="container studio">
+      <h1>Class desk</h1>
+      <p class="copy">Add a class, change it, hide it, or delete it. A hidden class stays here and leaves the public schedule.</p>
+
+      <form class="contact-form" id="studio-login">
+        <div class="field">
+          <label class="field-label" for="studio-password"><i class="fa-solid fa-lock icon" aria-hidden="true"></i>Password</label>
+          <input id="studio-password" name="password" type="password" required autocomplete="current-password" />
+        </div>
+        <p class="copy" id="studio-hint" hidden>Add STUDIO_PASSWORD in the .env file on this computer.</p>
+        <p class="form-status" id="studio-login-status" role="status"></p>
+        <button class="btn" type="submit"><span><i class="fa-solid fa-lock icon" aria-hidden="true"></i>Sign in</span></button>
+      </form>
+
+      <div id="studio-app" hidden>
+        <p class="note copy" id="studio-live" hidden><i class="fa-solid fa-circle-info icon" aria-hidden="true"></i>A save updates the live site after it rebuilds, usually about a minute.</p>
+        <p class="form-status" id="studio-status" role="status"></p>
+        <form class="contact-form studio-editor" id="studio-editor">
+          <h2 id="studio-editor-title">Add a class</h2>
+          <div class="field">
+            <label class="field-label" for="class-name">Class name</label>
+            <input id="class-name" name="name" required maxlength="80" />
+          </div>
+          <div class="field">
+            <label class="field-label" for="class-ages">Ages</label>
+            <input id="class-ages" name="ages" required maxlength="40" />
+          </div>
+          <div class="field">
+            <p class="field-label" id="class-days-label">Days and times</p>
+            <div id="class-sessions" aria-labelledby="class-days-label"></div>
+            <button class="studio-text" type="button" id="add-session">Add another day</button>
+          </div>
+          <div class="field">
+            <label class="field-label" for="class-availability">If the day is not set</label>
+            <input id="class-availability" name="availability" maxlength="80" placeholder="Scheduled upon availability" />
+          </div>
+          <div class="name-row">
+            <div class="field">
+              <label class="field-label" for="class-amount">Price</label>
+              <input id="class-amount" name="amount" required inputmode="decimal" maxlength="12" />
+            </div>
+            <div class="field">
+              <label class="field-label" for="class-billing">Charged</label>
+              <select id="class-billing" name="billing">
+                <option value="month">Per month</option>
+                <option value="hour">Per hour</option>
+                <option value="half-hour">Per ½ hour</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label" for="class-group">Section</label>
+            <select id="class-group" name="group" required></select>
+          </div>
+          <div class="field">
+            <label class="field-label" for="class-summary">Description</label>
+            <textarea id="class-summary" name="summary" required maxlength="600" rows="4"></textarea>
+          </div>
+          <div class="field">
+            <label class="field-label" for="class-recital">Recital note</label>
+            <input id="class-recital" name="recital" maxlength="200" />
+          </div>
+          <label class="studio-check" for="class-featured">
+            <input id="class-featured" name="featured" type="checkbox" />
+            Show on the home page
+          </label>
+          <div class="studio-actions">
+            <button class="btn" type="submit"><span id="studio-save-label"><i class="fa-solid fa-plus icon" aria-hidden="true"></i>Add class</span></button>
+            <button class="studio-text" type="button" id="studio-cancel" hidden>Cancel</button>
+            <button class="studio-text" type="button" id="studio-sign-out">Sign out</button>
+          </div>
+        </form>
+        <div id="studio-list"></div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { formatRange } from '../data/class-time.js';
+
+  const loginForm = document.querySelector<HTMLFormElement>('#studio-login');
+  const loginStatus = document.querySelector<HTMLElement>('#studio-login-status');
+  const hint = document.querySelector<HTMLElement>('#studio-hint');
+  const app = document.querySelector<HTMLElement>('#studio-app');
+  const liveNote = document.querySelector<HTMLElement>('#studio-live');
+  const status = document.querySelector<HTMLElement>('#studio-status');
+  const editor = document.querySelector<HTMLFormElement>('#studio-editor');
+  const editorTitle = document.querySelector<HTMLElement>('#studio-editor-title');
+  const saveLabel = document.querySelector<HTMLElement>('#studio-save-label');
+  const cancelButton = document.querySelector<HTMLButtonElement>('#studio-cancel');
+  const list = document.querySelector<HTMLElement>('#studio-list');
+  const groupSelect = document.querySelector<HTMLSelectElement>('#class-group');
+  const sessionsBox = document.querySelector<HTMLElement>('#class-sessions');
+  const addSession = document.querySelector<HTMLButtonElement>('#add-session');
+  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+  type DeskSession = { day: string; start: string; end: string };
+  type DeskClass = {
+    id: string;
+    name: string;
+    ages: string;
+    sessions: DeskSession[];
+    availability: string;
+    amount: string;
+    billing: string;
+    summary: string;
+    recital: string;
+    group: string;
+    hidden: boolean;
+    featured: boolean;
+    order: number;
+  };
+
+  let classes: DeskClass[] = [];
+  let groups: { id: string; label: string }[] = [];
+  let editing = '';
+  let saving = false;
+
+  function field(name: string) {
+    return editor?.elements.namedItem(name) as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | null;
+  }
+
+  function setStatus(message: string) {
+    if (status) status.textContent = message;
+  }
+
+  function groupLabel(id: string) {
+    return groups.find((group) => group.id === id)?.label || 'Other classes';
+  }
+
+  function fillGroups() {
+    if (!groupSelect) return;
+    groupSelect.innerHTML = groups.map((group) => `<option value="${group.id}">${group.label}</option>`).join('');
+  }
+
+  function sessionRow(session: DeskSession = { day: 'Monday', start: '', end: '' }) {
+    const row = document.createElement('div');
+    row.className = 'studio-session';
+    const options = days
+      .map((day) => `<option value="${day}"${day === session.day ? ' selected' : ''}>${day}</option>`)
+      .join('');
+    row.innerHTML = `<select aria-label="Day">${options}</select><label class="studio-time">Start<input type="time" data-start value="${escapeHtml(session.start)}" /></label><label class="studio-time">End<input type="time" data-end value="${escapeHtml(session.end)}" /></label><button class="studio-text" type="button" data-remove-session>Remove</button>`;
+    return row;
+  }
+
+  function setSessions(sessions: DeskSession[]) {
+    if (!sessionsBox) return;
+    sessionsBox.replaceChildren(...(sessions.length ? sessions : [{ day: 'Monday', start: '', end: '' }]).map((session) => sessionRow(session)));
+  }
+
+  function readSessions() {
+    return [...(sessionsBox?.querySelectorAll<HTMLElement>('.studio-session') || [])]
+      .map((row) => ({
+        day: row.querySelector('select')?.value || '',
+        start: row.querySelector<HTMLInputElement>('[data-start]')?.value || '',
+        end: row.querySelector<HTMLInputElement>('[data-end]')?.value || '',
+      }))
+      .filter((session) => session.start || session.end);
+  }
+
+  function priceText(item: DeskClass) {
+    const unit = item.billing === 'hour' ? 'per hour' : item.billing === 'half-hour' ? 'per ½ hour' : 'per month';
+    return `$${String(item.amount || '').replace(/^\$/, '')} ${unit}`;
+  }
+
+  function scheduleText(item: DeskClass) {
+    if (!item.sessions?.length) return item.availability || '';
+    return item.sessions.map((session) => `${session.day} ${formatRange(session.start, session.end)}`).join(' · ');
+  }
+
+  function clearEditor() {
+    editing = '';
+    editor?.reset();
+    setSessions([]);
+    if (editorTitle) editorTitle.textContent = 'Add a class';
+    if (saveLabel) saveLabel.innerHTML = '<i class="fa-solid fa-plus icon" aria-hidden="true"></i>Add class';
+    if (cancelButton) cancelButton.hidden = true;
+  }
+
+  function render() {
+    if (!list) return;
+    list.innerHTML = groups
+      .map((group) => {
+        const items = classes.filter((item) => item.group === group.id);
+        if (!items.length) return '';
+        const cards = items
+          .map((item, index) => {
+            const badges = [
+              item.hidden ? 'Hidden' : '',
+              item.featured ? 'On the home page' : '',
+            ].filter(Boolean);
+            return `<article class="studio-class${item.hidden ? ' is-hidden' : ''}">
+              <div class="studio-row">
+                <div>
+                  <strong>${escapeHtml(item.name)}</strong>
+                  <p class="copy">${escapeHtml(item.ages)}<br>${escapeHtml(scheduleText(item))}<br>${escapeHtml(priceText(item))}</p>
+                  ${badges.length ? `<p class="studio-badges">${badges.map((badge) => `<span class="studio-badge">${badge}</span>`).join('')}</p>` : ''}
+                </div>
+                <div class="studio-actions">
+                  <button type="button" data-edit="${item.id}">Edit</button>
+                  <button type="button" data-hide="${item.id}">${item.hidden ? 'Show' : 'Hide'}</button>
+                  <button type="button" data-up="${item.id}" ${index === 0 ? 'disabled' : ''}>Up</button>
+                  <button type="button" data-down="${item.id}" ${index === items.length - 1 ? 'disabled' : ''}>Down</button>
+                  <button type="button" data-delete="${item.id}">Delete</button>
+                </div>
+              </div>
+            </article>`;
+          })
+          .join('');
+        return `<h2>${group.label}</h2><div class="studio-group">${cards}</div>`;
+      })
+      .join('');
+  }
+
+  function escapeHtml(value: string) {
+    return value
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  async function request(method: string, body?: unknown) {
+    const response = await fetch('/api/studio-classes', {
+      method,
+      headers: body ? { 'Content-Type': 'application/json' } : undefined,
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || 'The class desk could not save.');
+    return data;
+  }
+
+  async function persist(next: DeskClass[], message: string) {
+    if (saving) return false;
+    saving = true;
+    setStatus('Saving…');
+    try {
+      const data = await request('PUT', { classes: next });
+      classes = data.classes;
+      render();
+      const base = message || 'Saved.';
+      setStatus(data.live ? `${base} The public site updates after it rebuilds.` : base);
+      return true;
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'The class desk could not save.');
+      return false;
+    } finally {
+      saving = false;
+    }
+  }
+
+  async function openDesk() {
+    const response = await fetch('/api/studio-classes');
+    const data = await response.json().catch(() => ({}));
+    if (response.status === 401) {
+      if (hint) hint.hidden = !data.localHint;
+      return;
+    }
+    if (!response.ok) {
+      if (loginStatus) loginStatus.textContent = data.error || 'The class desk is not available.';
+      return;
+    }
+    classes = data.classes || [];
+    groups = data.groups || [];
+    fillGroups();
+    if (loginForm) loginForm.hidden = true;
+    if (app) app.hidden = false;
+    if (liveNote) liveNote.hidden = !data.live;
+    clearEditor();
+    render();
+  }
+
+  loginForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (loginStatus) loginStatus.textContent = '';
+    const password = String(new FormData(loginForm).get('password') || '');
+    try {
+      await request('POST', { action: 'login', password });
+      await openDesk();
+      window.dispatchEvent(new Event('studio-session'));
+    } catch (error) {
+      if (loginStatus) loginStatus.textContent = error instanceof Error ? error.message : 'That password is not right.';
+    }
+  });
+
+  editor?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const current = classes.find((item) => item.id === editing);
+    const sessions = readSessions();
+    if (sessions.some((session) => !session.start || !session.end)) {
+      setStatus('Each day needs a start time and an end time.');
+      return;
+    }
+    if (sessions.some((session) => session.end <= session.start)) {
+      setStatus('The end time has to be later than the start time.');
+      return;
+    }
+    const nextItem: DeskClass = {
+      id: editing,
+      name: field('name')?.value.trim() || '',
+      ages: field('ages')?.value.trim() || '',
+      sessions,
+      availability: field('availability')?.value.trim() || '',
+      amount: field('amount')?.value.trim() || '',
+      billing: field('billing')?.value || 'month',
+      summary: field('summary')?.value.trim() || '',
+      recital: field('recital')?.value.trim() || '',
+      group: field('group')?.value || 'more',
+      hidden: current?.hidden || false,
+      featured: (field('featured') as HTMLInputElement | null)?.checked || false,
+      order: current?.order || 0,
+    };
+    const without = classes.filter((item) => item.id !== editing);
+    const next = editing ? classes.map((item) => (item.id === editing ? nextItem : item)) : [...without, nextItem];
+    const saved = await persist(next, editing ? 'Saved.' : 'Class added.');
+    if (saved) clearEditor();
+  });
+
+  addSession?.addEventListener('click', () => {
+    sessionsBox?.append(sessionRow());
+  });
+
+  sessionsBox?.addEventListener('click', (event) => {
+    const button = (event.target as HTMLElement).closest('[data-remove-session]');
+    const row = button?.closest('.studio-session');
+    if (!row || !sessionsBox) return;
+    if (sessionsBox.querySelectorAll('.studio-session').length === 1) {
+      row.querySelectorAll('input').forEach((input) => {
+        input.value = '';
+      });
+      return;
+    }
+    row.remove();
+  });
+
+  cancelButton?.addEventListener('click', clearEditor);
+
+  document.querySelector('#studio-sign-out')?.addEventListener('click', async () => {
+    await request('POST', { action: 'logout' });
+    sessionStorage.removeItem('studio-visitor');
+    window.dispatchEvent(new Event('studio-session'));
+    if (app) app.hidden = true;
+    if (loginForm) {
+      loginForm.hidden = false;
+      loginForm.reset();
+    }
+  });
+
+  list?.addEventListener('click', async (event) => {
+    const button = (event.target as HTMLElement).closest('button');
+    if (!button) return;
+    const id = button.dataset.edit || button.dataset.hide || button.dataset.delete || button.dataset.up || button.dataset.down;
+    const item = classes.find((entry) => entry.id === id);
+    if (!item || !id) return;
+    if (button.dataset.edit) {
+      editing = item.id;
+      if (field('name')) field('name')!.value = item.name;
+      if (field('ages')) field('ages')!.value = item.ages;
+      setSessions(item.sessions || []);
+      if (field('availability')) field('availability')!.value = item.availability || '';
+      if (field('amount')) field('amount')!.value = item.amount || '';
+      if (field('billing')) field('billing')!.value = item.billing || 'month';
+      if (field('summary')) field('summary')!.value = item.summary;
+      if (field('recital')) field('recital')!.value = item.recital || '';
+      if (field('group')) field('group')!.value = item.group;
+      const featured = field('featured') as HTMLInputElement | null;
+      if (featured) featured.checked = item.featured;
+      if (editorTitle) editorTitle.textContent = `Edit ${item.name}`;
+      if (saveLabel) saveLabel.textContent = 'Save changes';
+      if (cancelButton) cancelButton.hidden = false;
+      editor?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    if (button.dataset.hide) {
+      await persist(classes.map((entry) => (entry.id === id ? { ...entry, hidden: !entry.hidden } : entry)), item.hidden ? 'Class is on the site again.' : 'Class hidden.');
+      return;
+    }
+    if (button.dataset.delete) {
+      if (!confirm(`Delete ${item.name}? This cannot be undone.`)) return;
+      await persist(classes.filter((entry) => entry.id !== id), 'Class deleted.');
+      if (editing === id) clearEditor();
+      return;
+    }
+    const siblings = classes.filter((entry) => entry.group === item.group);
+    const index = siblings.findIndex((entry) => entry.id === id);
+    const swapWith = button.dataset.up ? siblings[index - 1] : siblings[index + 1];
+    if (!swapWith) return;
+    const next = classes.map((entry) => {
+      if (entry.id === item.id) return swapWith;
+      if (entry.id === swapWith.id) return item;
+      return entry;
+    });
+    await persist(next, 'Saved.');
+  });
+
+  openDesk();
+</script>

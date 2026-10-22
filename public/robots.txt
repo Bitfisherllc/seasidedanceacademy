@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /studio
+Disallow: /apps/search
 
 Sitemap: https://www.seasidedanceacademy.net/sitemap.xml

@@ -2,17 +2,16 @@ export const site = {
   name: 'Seaside Dance Academy',
   url: 'https://www.seasidedanceacademy.net',
   description:
-    'Technical dance training in a supportive and encouraging environment for dancers at all levels. Studio at 16 S Main St Unit C, Berlin, Maryland.',
+    'Technical dance training in a supportive and encouraging environment for dancers at all levels. Studio at 16 S Main St, Berlin, Maryland.',
   phoneDisplay: '(410) 629-0377',
   phoneTel: '4106290377',
   email: 'seasidedanceacademy@gmail.com',
   director: 'Lisa Tingle',
-  street: '16 S Main St Unit C',
+  street: '16 S Main St',
   city: 'Berlin',
-  region: 'MD',
+  region: 'Maryland',
   postal: '21811',
-  addressLine: '16 S Main St Unit C, Berlin, MD 21811',
-  contactAddressLine: '16 C South Main Street, Berlin, Maryland 21811',
+  addressLine: '16 S Main St, Berlin, Maryland 21811',
   facebook: 'https://www.facebook.com/seasidedanceacademy/',
   instagram: 'https://www.instagram.com/seasidedanceacademy_/',
   youtube: 'https://www.youtube.com/channel/UCCv4nTJ4pOkba_B58Wo7C4Q',
@@ -29,6 +28,8 @@ export const nav = [
   { href: '/registration.html', label: 'Registration', icon: 'clipboard-list', brand: false },
   { href: '/seaside-news.html', label: 'News', icon: 'facebook', brand: true },
   { href: '/photos--videos.html', label: 'Photos', icon: 'images', brand: false },
+  { href: '/reviews.html', label: 'Reviews', icon: 'star', brand: false },
+  { href: '/q-and-a.html', label: 'Q & A', icon: 'circle-question', brand: false },
   { href: '/contact.html', label: 'Contact', icon: 'envelope', brand: false },
 ] as const;
 
@@ -39,25 +40,48 @@ export const pages = {
       'Dance classes for ages 3 and up in Berlin, Maryland. Ballet, jazz, tap, hip hop, acro, pom, and Broadway. Registration is open for the 2026-2027 season.',
   },
   classes: {
-    title: 'Classes | Seaside Dance Academy',
+    title: 'Dance Classes | Seaside Dance Academy',
     description:
-      '2026-2027 class schedule, ages, and monthly tuition for Seaside Dance Academy in Berlin, Maryland. Classes begin Monday, September 14.',
+      'See the 2026-2027 schedule, ages, days, and monthly tuition at Seaside Dance Academy in Berlin, Maryland. Classes begin September 14.',
   },
   registration: {
-    title: 'Registration | Seaside Dance Academy',
+    title: 'Class Registration | Seaside Dance Academy',
     description:
-      'Register for the 2026-2027 season at Seaside Dance Academy. Classes begin Monday, September 14.',
+      'Register for the 2026-2027 season at Seaside Dance Academy in Berlin, Maryland. Classes begin Monday, September 14. Call (410) 629-0377.',
   },
   news: {
-    title: 'Seaside News | Seaside Dance Academy',
-    description: 'News from Seaside Dance Academy in Berlin, Maryland.',
+    title: 'Studio News | Seaside Dance Academy',
+    description:
+      'News and Facebook updates from Seaside Dance Academy in Berlin, Maryland, including performances, awards, and studio life. Read the latest posts.',
   },
   photos: {
     title: 'Photos & Videos | Seaside Dance Academy',
-    description: 'Photos and videos from Seaside Dance Academy recitals, competitions, and studio life.',
+    description:
+      'Photo albums and videos from Seaside Dance Academy recitals, competitions, and studio life in Berlin, Maryland. Open an album to see the pictures.',
+  },
+  reviews: {
+    title: 'Google Reviews | Seaside Dance Academy',
+    description:
+      'Read Google reviews from Seaside Dance Academy families in Berlin, Maryland, or leave a review for the studio. Written reviews come from Google.',
   },
   contact: {
     title: 'Contact | Seaside Dance Academy',
-    description: 'Call Seaside Dance Academy at (410) 629-0377. Studio at 16 S Main St Unit C, Berlin, MD 21811.',
+    description:
+      'Call Seaside Dance Academy at (410) 629-0377 or email the studio at 16 S Main St, Berlin, Maryland 21811. Desk staff are available during operation hours.',
+  },
+  directions: {
+    title: 'Directions | Seaside Dance Academy',
+    description:
+      'Get directions to Seaside Dance Academy at 16 S Main St, Berlin, Maryland 21811, about ten miles from Ocean City and Assateague Island.',
+  },
+  qa: {
+    title: 'Class Questions | Seaside Dance Academy',
+    description:
+      'Answers about start dates, ages, tuition, and the Seaside Dance Academy studio at 16 S Main St in Berlin, Maryland. Classes begin September 14.',
+  },
+  instagram: {
+    title: 'Instagram | Seaside Dance Academy',
+    description:
+      'Recent photos from the Seaside Dance Academy Instagram, @seasidedanceacademy_, in Berlin, Maryland. Follow the studio for new pictures.',
   },
 } as const;

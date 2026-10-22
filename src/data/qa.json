@@ -1,0 +1,40 @@
+{
+  "title": "Q & A",
+  "lead": "Answers from the class schedule, registration, and studio information.",
+  "banner": {
+    "src": "/images/hero/stage-lilac.jpg",
+    "focus": "center 50%"
+  },
+  "items": [
+    {
+      "id": "when-classes-start",
+      "question": "When do classes start?",
+      "answer": "Registration is now open for the 2026-2027 season. Classes begin Monday September 14th."
+    },
+    {
+      "id": "where-is-the-studio",
+      "question": "Where is the studio?",
+      "answer": "Seaside Dance Academy is at 16 S Main St, Berlin, Maryland 21811."
+    },
+    {
+      "id": "how-do-i-reach-the-studio",
+      "question": "How do I reach the studio?",
+      "answer": "Call (410) 629-0377 or email seasidedanceacademy@gmail.com. Desk staff are available during operation hours."
+    },
+    {
+      "id": "what-ages",
+      "question": "What ages can take class?",
+      "answer": "Dance & Grow 1 is for ages 3 and 4. The class schedule lists an age for every class."
+    },
+    {
+      "id": "how-much",
+      "question": "How much does a class cost?",
+      "answer": "Each class lists its price per month. Private lessons are $30 per half hour."
+    },
+    {
+      "id": "small-classes",
+      "question": "What if only a few dancers sign up?",
+      "answer": "Classes with less than 4 dancers are subject to cancellation due to low enrollment."
+    }
+  ]
+}

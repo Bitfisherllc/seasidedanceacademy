@@ -1,0 +1,10 @@
+{
+  "title": "Directions",
+  "note": "Seaside Dance Academy is in the heart of historic Berlin, about ten miles from the beaches of Ocean City and Assateague Island.",
+  "button": "Get directions",
+  "hours": "Desk staff during operation hours",
+  "banner": {
+    "src": "/images/hero/portrait-smile.jpg",
+    "focus": "center 50%"
+  }
+}

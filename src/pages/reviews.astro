@@ -1,0 +1,181 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import { pages } from '../data/site';
+import { albums, gallery } from '../data/albums';
+import reviews from '../data/reviews.json';
+import reviewsPage from '../data/reviews-page.json';
+
+const score = Number(reviews.rating).toFixed(1);
+const readReviewsUrl = 'https://www.google.com/maps/place//data=!4m4!3m3!1s0x89b926e93513792b:0xc37ae11f0c25c634!9m1!1b1';
+const writeReviewUrl = 'https://www.google.com/maps/place//data=!4m3!3m2!1s0x89b926e93513792b:0xc37ae11f0c25c634!12e1';
+const photoAlbums = [
+  { title: 'Gallery', images: gallery.map((item) => item.src) },
+  ...albums.map((album) => ({
+    title: album.title,
+    images: album.images.length ? album.images : [album.image],
+  })),
+];
+---
+
+<Base title={pages.reviews.title} description={pages.reviews.description} canonical="/reviews.html">
+  <Hero slot="hero" icon="star" image={reviewsPage.banner.src} focus={reviewsPage.banner.focus} photoKey="reviews" quoteKey="reviews">
+    <button slot="edit" class="home-edit-btn" type="button" data-edit="banner">Edit</button>
+  </Hero>
+  <section class="section">
+    <div class="container home-block">
+      <button class="home-edit-btn" type="button" data-edit="copy">Edit</button>
+      <h1 class="center">
+        <span class="fs-32" data-reviews="title">{reviewsPage.title}</span><br />
+        <span class="fs-18 tone-soft" data-reviews="subtitle">{reviewsPage.subtitle}</span>
+      </h1>
+      <p class="review-score" data-review-score>
+        <span class="review-score-num" data-review-rating>{score}</span>
+        <span>
+          <span class="review-stars" aria-label={`${score} out of 5`}>
+            {Array.from({ length: 5 }, (_, index) => (
+              <i class:list={['fa-solid', 'fa-star', { 'is-off': index + 1 > Math.round(reviews.rating) }]} aria-hidden="true"></i>
+            ))}
+          </span>
+          <span class="review-count" data-review-count>{reviews.count} Google reviews</span>
+        </span>
+      </p>
+      <div class="review-list" data-review-list>
+        {reviews.reviews.map((review) => (
+          <article class="review-card">
+            <span class="review-stars" aria-label={`${review.rating} out of 5`}>
+              {Array.from({ length: 5 }, (_, index) => (
+                <i class:list={['fa-solid', 'fa-star', { 'is-off': index >= review.rating }]} aria-hidden="true"></i>
+              ))}
+            </span>
+            <p class="copy">{review.text}</p>
+            <p class="review-by">
+              <i class="fa-brands fa-google icon" aria-hidden="true"></i>
+              <span>{review.author}</span>
+              {review.date && <span>{review.date}</span>}
+            </p>
+          </article>
+        ))}
+      </div>
+      <section class="google-reviews" aria-labelledby="google-reviews-heading">
+        <h2 id="google-reviews-heading" class="center">
+          <span class="fs-32" data-reviews="heading">{reviewsPage.heading}</span>
+        </h2>
+        <p class="copy center google-reviews-lead" data-reviews="lead">{reviewsPage.lead}</p>
+        <div class="google-reviews-actions">
+          <a class="btn" href={readReviewsUrl} target="_blank" rel="noopener noreferrer">
+            <span><i class="fa-solid fa-star icon" aria-hidden="true"></i><span data-reviews="readLabel">{reviewsPage.readLabel}</span></span>
+          </a>
+          <a class="btn" href={writeReviewUrl} target="_blank" rel="noopener noreferrer">
+            <span><i class="fa-solid fa-pen-to-square icon" aria-hidden="true"></i><span data-reviews="writeLabel">{reviewsPage.writeLabel}</span></span>
+          </a>
+        </div>
+      </section>
+    </div>
+  </section>
+  <dialog class="home-edit-dialog" id="reviews-edit-dialog">
+    <form id="reviews-edit-form" onsubmit="event.preventDefault()">
+      <h2 id="reviews-edit-title">Edit</h2>
+      <p class="home-edit-note" id="reviews-edit-note"></p>
+      <div id="reviews-edit-fields"></div>
+      <p class="home-edit-status" id="reviews-edit-status" role="status"></p>
+      <div class="home-edit-actions">
+        <button class="home-edit-save" type="button">Save</button>
+        <button class="home-edit-cancel" type="button" id="reviews-edit-cancel">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+</Base>
+
+<script define:vars={{ photoAlbums }}>
+  window.__pageAlbums = photoAlbums;
+</script>
+<script>
+  const list = document.querySelector('[data-review-list]');
+  const ratingNode = document.querySelector('[data-review-rating]');
+  const countNode = document.querySelector('[data-review-count]');
+
+  function stars(rating, label) {
+    const wrap = document.createElement('span');
+    wrap.className = 'review-stars';
+    const count = Math.max(0, Math.min(5, Math.round(Number(rating) || 0)));
+    wrap.setAttribute('aria-label', label || `${count} out of 5`);
+    for (let index = 1; index <= 5; index += 1) {
+      const icon = document.createElement('i');
+      icon.className = `fa-solid fa-star${index > count ? ' is-off' : ''}`;
+      icon.setAttribute('aria-hidden', 'true');
+      wrap.append(icon);
+    }
+    return wrap;
+  }
+
+  function paint(feed) {
+    if (!list || !Array.isArray(feed.reviews) || !feed.reviews.length) return;
+    const score = Number(feed.rating);
+    const shown = Number.isFinite(score) ? score.toFixed(1) : '';
+    if (ratingNode && shown) ratingNode.textContent = shown;
+    if (countNode && feed.count) countNode.textContent = `${feed.count} Google reviews`;
+    const currentStars = document.querySelector('[data-review-score] .review-stars');
+    if (currentStars && shown) currentStars.replaceWith(stars(score, `${shown} out of 5`));
+    list.replaceChildren();
+    feed.reviews.forEach((review) => {
+      const article = document.createElement('article');
+      article.className = 'review-card';
+      article.append(stars(review.rating));
+      const copy = document.createElement('p');
+      copy.className = 'copy';
+      copy.textContent = review.text || '';
+      const by = document.createElement('p');
+      by.className = 'review-by';
+      const icon = document.createElement('i');
+      icon.className = 'fa-brands fa-google icon';
+      icon.setAttribute('aria-hidden', 'true');
+      const author = document.createElement('span');
+      author.textContent = review.author || 'Google reviewer';
+      by.append(icon, author);
+      if (review.date) {
+        const date = document.createElement('span');
+        date.textContent = review.date;
+        by.append(date);
+      }
+      article.append(copy, by);
+      list.append(article);
+    });
+  }
+
+  fetch('/api/google-reviews')
+    .then((response) => (response.ok ? response.json() : null))
+    .then((feed) => {
+      if (feed?.ok) paint(feed);
+    })
+    .catch(() => {});
+</script>
+<script>
+  import { mountPageEditor } from '../scripts/page-editor.js';
+
+  mountPageEditor({
+    photoAlbums: window.__pageAlbums || [],
+    dialog: '#reviews-edit-dialog',
+    form: '#reviews-edit-form',
+    fields: '#reviews-edit-fields',
+    title: '#reviews-edit-title',
+    note: '#reviews-edit-note',
+    status: '#reviews-edit-status',
+    cancel: '#reviews-edit-cancel',
+    endpoint: '/api/reviews-page',
+    photoKey: 'reviews',
+    bannerMark: '/reviews-banner.',
+    dataAttr: 'data-reviews',
+    copyTitle: 'Reviews',
+    copyNote: 'The Google rating and written reviews stay. Both buttons still open Google.',
+    bannerNote: 'The banner stays the same size. Slide the photo so faces stay in view. This quote is only on this page.',
+    copyFields: [
+      { key: 'title', label: 'Heading', max: 40 },
+      { key: 'subtitle', label: 'Subtitle', max: 40 },
+      { key: 'heading', label: 'Section heading', max: 80 },
+      { key: 'lead', label: 'Paragraph', max: 360, long: true },
+      { key: 'readLabel', label: 'Read button', max: 40 },
+      { key: 'writeLabel', label: 'Write button', max: 40 },
+    ],
+  });
+</script>

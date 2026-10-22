@@ -3,35 +3,44 @@ import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import Slideshow from '../components/Slideshow.astro';
 import ClassCard from '../components/ClassCard.astro';
-import { pages, site } from '../data/site';
+import { pages } from '../data/site';
 import { homeClasses } from '../data/classes';
-import { directorBio, studioFacts, studioParagraphs } from '../data/studio';
+import { studioFacts } from '../data/studio';
+import { albums, gallery } from '../data/albums';
+import home from '../data/home.json';
+
+const phoneTel = home.welcome.phone.replace(/\D/g, '');
+const photoAlbums = [
+  { title: 'Gallery', images: gallery.map((item) => item.src) },
+  ...albums.map((album) => ({ title: album.title, images: album.images })),
+];
 ---
 
 <Base title={pages.home.title} description={pages.home.description} canonical="/">
-  <Hero slot="hero" icon="house" home image="/images/hero/duo-blue.jpg" focus="center">
+  <Hero slot="hero" icon="house" home image={home.hero.image} focus={home.hero.focus}>
+    <button slot="edit" class="home-edit-btn" type="button" data-edit="hero">Edit</button>
     <div class="hero-help">
-      <p class="hero-line">{site.season}</p>
+      <p class="hero-line" data-home="hero.line">{home.hero.line}</p>
       <div class="contact-choices">
         <a class="contact-choice" href="/classes.html">
           <i class="fa-solid fa-person-running choice-icon" aria-hidden="true"></i>
           <span class="choice-copy">
-            <span class="choice-title">Classes</span>
-            <span class="choice-note">{site.seasonStart}</span>
+            <span class="choice-title" data-home="hero.choices.0.title">{home.hero.choices[0].title}</span>
+            <span class="choice-note" data-home="hero.choices.0.note">{home.hero.choices[0].note}</span>
           </span>
         </a>
         <a class="contact-choice" href="/registration.html">
           <i class="fa-solid fa-clipboard-list choice-icon" aria-hidden="true"></i>
           <span class="choice-copy">
-            <span class="choice-title">Register</span>
-            <span class="choice-note">Save a spot for the season.</span>
+            <span class="choice-title" data-home="hero.choices.1.title">{home.hero.choices[1].title}</span>
+            <span class="choice-note" data-home="hero.choices.1.note">{home.hero.choices[1].note}</span>
           </span>
         </a>
         <a class="contact-choice" href="/contact.html">
           <i class="fa-solid fa-envelope choice-icon" aria-hidden="true"></i>
           <span class="choice-copy">
-            <span class="choice-title">Contact</span>
-            <span class="choice-note">Call or send a note.</span>
+            <span class="choice-title" data-home="hero.choices.2.title">{home.hero.choices[2].title}</span>
+            <span class="choice-note" data-home="hero.choices.2.note">{home.hero.choices[2].note}</span>
           </span>
         </a>
       </div>
@@ -39,18 +48,19 @@ import { directorBio, studioFacts, studioParagraphs } from '../data/studio';
   </Hero>
 
   <section class="section">
-    <div class="container">
+    <div class="container home-block">
+      <button class="home-edit-btn" type="button" data-edit="welcome">Edit</button>
       <div class="cols cols-2">
-        <Slideshow />
+        <Slideshow slides={home.slides} />
         <div>
           <h1>
-            <span class="fs-16">Berlin, Maryland</span><br />
-            <span class="fs-18">Seaside Dance Academy</span>
+            <span class="fs-16" data-home="welcome.place">{home.welcome.place}</span><br />
+            <span class="fs-18" data-home="welcome.name">{home.welcome.name}</span>
           </h1>
-          <p class="copy">{site.quote}</p>
+          <p class="copy" data-home="welcome.quote">{home.welcome.quote}</p>
           <p class="heading">
-            <span class="fs-24 tone-gray">Call the studio</span><br />
-            <a class="phone-link" href={`tel:${site.phoneTel}`}><i class="fa-solid fa-phone icon" aria-hidden="true"></i>{site.phoneDisplay}</a>
+            <span class="fs-24 tone-gray" data-home="welcome.call">{home.welcome.call}</span><br />
+            <a class="phone-link" href={`tel:${phoneTel}`}><i class="fa-solid fa-phone icon" aria-hidden="true"></i>{home.welcome.phone}</a>
           </p>
         </div>
       </div>
@@ -58,60 +68,629 @@ import { directorBio, studioFacts, studioParagraphs } from '../data/studio';
   </section>
 
   <section class="section">
-    <div class="container">
+    <div class="container home-block">
+      <button class="home-edit-btn" type="button" data-edit="studio">Edit</button>
       <h2 class="center">
-        <span class="fs-32">The studio</span><br />
-        <span class="fs-18 tone-soft">Worcester County since 2001</span>
+        <span class="fs-32" data-home="studio.title">{home.studio.title}</span><br />
+        <span class="fs-18 tone-soft" data-home="studio.subtitle">{home.studio.subtitle}</span>
       </h2>
-      {studioParagraphs.map((paragraph) => <p class="copy center trust-lead">{paragraph}</p>)}
+      {home.studio.paragraphs.map((paragraph, index) => <p class="copy center trust-lead" data-home={`studio.paragraphs.${index}`}>{paragraph}</p>)}
       <div class="cols cols-4 trust-points">
-        {studioFacts.map((fact) => (
+        {home.studio.facts.map((label, index) => (
           <p class="trust-point">
-            <i class={`fa-solid fa-${fact.icon}`} aria-hidden="true"></i>
-            <strong>{fact.label}</strong>
+            <i class={`fa-solid fa-${studioFacts[index].icon}`} aria-hidden="true"></i>
+            <strong data-home={`studio.facts.${index}`}>{label}</strong>
           </p>
         ))}
       </div>
     </div>
   </section>
 
-  <div class="photo-band">
-    <img src="/images/gallery/03.jpg" alt="" width="1100" height="733" />
+  <div class="photo-band home-band">
+    <button class="home-edit-btn" type="button" data-edit="band0">Edit</button>
+    <img src={home.bands[0].src} alt={home.bands[0].alt || 'Seaside Dance Academy dancers performing on stage'} width="1100" height="733" style={`object-position: ${home.bands[0].focus}`} data-home-photo="bands.0" data-focus={home.bands[0].focus} loading="lazy" />
   </div>
 
   <section class="section">
-    <div class="container">
+    <div class="container home-block">
+      <button class="home-edit-btn" type="button" data-edit="classes">Edit</button>
       <h2 class="center">
-        <span class="fs-32">Classes</span><br />
-        <span class="fs-18 tone-soft">2026–2027 season</span>
+        <span class="fs-32" data-home="classes.title">{home.classes.title}</span><br />
+        <span class="fs-18 tone-soft" data-home="classes.subtitle">{home.classes.subtitle}</span>
       </h2>
       <ul class="fact-list fact-list-center">
-        <li><i class="fa-solid fa-clipboard-check icon" aria-hidden="true"></i>{site.season}</li>
-        <li><i class="fa-solid fa-calendar-days icon" aria-hidden="true"></i>{site.seasonStart}</li>
+        <li><i class="fa-solid fa-clipboard-check icon" aria-hidden="true"></i><span data-home="classes.lines.0">{home.classes.lines[0]}</span></li>
+        <li><i class="fa-solid fa-calendar-days icon" aria-hidden="true"></i><span data-home="classes.lines.1">{home.classes.lines[1]}</span></li>
       </ul>
       <div class="class-grid">
         {homeClasses.map((item) => <ClassCard item={item} link />)}
       </div>
-      <p class="center"><a class="btn" href="/classes.html"><span><i class="fa-solid fa-calendar-days icon" aria-hidden="true"></i>Full schedule</span></a></p>
+      <p class="center"><a class="btn" href="/classes.html"><span><i class="fa-solid fa-calendar-days icon" aria-hidden="true"></i><span data-home="classes.button">{home.classes.button}</span></span></a></p>
     </div>
   </section>
 
-  <div class="photo-band">
-    <img src="/images/gallery/01.jpg" alt="" width="1100" height="733" />
+  <div class="photo-band home-band">
+    <button class="home-edit-btn" type="button" data-edit="band1">Edit</button>
+    <img src={home.bands[1].src} alt={home.bands[1].alt || 'Seaside Dance Academy dancers performing on stage'} width="1100" height="733" style={`object-position: ${home.bands[1].focus}`} data-home-photo="bands.1" data-focus={home.bands[1].focus} loading="lazy" />
   </div>
 
   <section class="section">
-    <div class="container">
+    <div class="container home-block">
+      <button class="home-edit-btn" type="button" data-edit="director">Edit</button>
       <h2 class="center">
-        <span class="fs-32">Studio director</span><br />
-        <span class="fs-18 tone-soft">{site.director}</span>
+        <span class="fs-32" data-home="director.title">{home.director.title}</span><br />
+        <span class="fs-18 tone-soft" data-home="director.name">{home.director.name}</span>
       </h2>
       <div class="director">
-        <img class="portrait" src="/images/studio/lisa-tingle.jpg" alt="Lisa Tingle, founder of Seaside Dance Academy" width="128" height="166" />
+        <img class="portrait" src={home.director.photo} alt="Lisa Tingle, founder of Seaside Dance Academy" width="240" height="311" data-home-photo="director.photo" />
         <div>
-          {directorBio.map((paragraph) => <p class="copy">{paragraph}</p>)}
+          {home.director.paragraphs.map((paragraph, index) => <p class="copy center" data-home={`director.paragraphs.${index}`}>{paragraph}</p>)}
         </div>
       </div>
     </div>
   </section>
+
+  <dialog class="home-edit-dialog" id="home-edit-dialog">
+    <form id="home-edit-form">
+      <h2 id="home-edit-title">Edit</h2>
+      <p class="home-edit-note" id="home-edit-note"></p>
+      <div id="home-edit-fields"></div>
+      <p class="home-edit-status" id="home-edit-status" role="status"></p>
+      <div class="home-edit-actions">
+        <button class="home-edit-save" type="submit">Save</button>
+        <button class="home-edit-cancel" type="button" id="home-edit-cancel">Cancel</button>
+      </div>
+    </form>
+  </dialog>
 </Base>
+
+<script define:vars={{ photoAlbums }}>
+  const editors = {
+    hero: {
+      title: 'Top banner',
+      note: 'The banner stays the same size. Slide the photo so faces stay in view. The boxes still go to the same pages.',
+      photo: 'hero.image',
+      focusKey: 'hero.focus',
+      uploadIndex: 3,
+      fields: [
+        ['hero.line', 'Line', 140],
+        ['hero.choices.0.title', 'First box', 24],
+        ['hero.choices.0.note', 'First box note', 80],
+        ['hero.choices.1.title', 'Second box', 24],
+        ['hero.choices.1.note', 'Second box note', 80],
+        ['hero.choices.2.title', 'Third box', 24],
+        ['hero.choices.2.note', 'Third box note', 80],
+      ],
+    },
+    welcome: {
+      title: 'Welcome',
+      note: 'The phone number stays the studio number.',
+      fields: [
+        ['welcome.place', 'Small heading', 40],
+        ['welcome.name', 'Large heading', 48],
+        ['welcome.quote', 'Paragraph', 320, true],
+        ['welcome.call', 'Call label', 40],
+      ],
+    },
+    studio: {
+      title: 'The studio',
+      note: 'The four points stay in the same row.',
+      fields: [
+        ['studio.title', 'Heading', 40],
+        ['studio.subtitle', 'Subheading', 60],
+        ['studio.paragraphs.0', 'Paragraph 1', 800, true],
+        ['studio.paragraphs.1', 'Paragraph 2', 800, true],
+        ['studio.paragraphs.2', 'Paragraph 3', 800, true],
+        ['studio.paragraphs.3', 'Paragraph 4', 800, true],
+        ['studio.facts.0', 'Point 1', 40],
+        ['studio.facts.1', 'Point 2', 40],
+        ['studio.facts.2', 'Point 3', 40],
+        ['studio.facts.3', 'Point 4', 40],
+      ],
+    },
+    classes: {
+      title: 'Classes',
+      note: 'The class cards stay put. Add, change, or delete a class on the Classes page.',
+      fields: [
+        ['classes.title', 'Heading', 40],
+        ['classes.subtitle', 'Subheading', 60],
+        ['classes.lines.0', 'First line', 140],
+        ['classes.lines.1', 'Second line', 140],
+        ['classes.button', 'Button', 32],
+      ],
+    },
+    director: {
+      title: 'Studio director',
+      note: 'Pick a new photo or upload one. The words stay in the same place.',
+      photo: 'director.photo',
+      framed: true,
+      fields: [
+        ['director.title', 'Heading', 40],
+        ['director.name', 'Name', 48],
+        ['director.paragraphs.0', 'Paragraph 1', 1200, true],
+        ['director.paragraphs.1', 'Paragraph 2', 1200, true],
+      ],
+    },
+    band0: {
+      title: 'Top photo',
+      note: 'The strip stays the same size. Slide the photo so faces stay in view. Describe the photo if you change it.',
+      photo: 'bands.0',
+      fields: [],
+    },
+    band1: {
+      title: 'Bottom photo',
+      note: 'The strip stays the same size. Slide the photo so faces stay in view. Describe the photo if you change it.',
+      photo: 'bands.1',
+      fields: [],
+    },
+    slides: {
+      title: 'Slideshow',
+      note: 'The frame stays the same size. Change the photos that play here, and describe each one.',
+      slides: true,
+      fields: [],
+    },
+  };
+
+  const dialog = document.querySelector('#home-edit-dialog');
+  const form = document.querySelector('#home-edit-form');
+  const fields = document.querySelector('#home-edit-fields');
+  const title = document.querySelector('#home-edit-title');
+  const note = document.querySelector('#home-edit-note');
+  const status = document.querySelector('#home-edit-status');
+  let current = '';
+  let pendingUpload = null;
+  let slideDraft = [];
+
+  function textFor(key) {
+    return document.querySelector(`[data-home="${key}"]`)?.textContent?.trim() || '';
+  }
+
+  function focusAmount(value) {
+    const match = value.match(/(\d{1,2})%/);
+    const amount = match ? Number(match[1]) : 50;
+    return Math.max(10, Math.min(90, amount));
+  }
+
+  function openPhoto(photoKey, framed, uploadIndex) {
+    if (!fields) return;
+    const image = document.querySelector(`[data-home-photo="${photoKey}"]`);
+    const index = Number.isInteger(uploadIndex) ? uploadIndex : framed ? 2 : photoKey.endsWith('1') ? 1 : 0;
+    pendingUpload = null;
+    const preview = document.createElement('div');
+    preview.className = framed ? 'portrait-preview' : index === 3 ? 'hero-preview' : 'band-preview';
+    const previewImage = document.createElement('img');
+    previewImage.alt = '';
+    previewImage.src = image?.src || '';
+    preview.append(previewImage);
+    const sliderLabel = document.createElement('label');
+    if (!framed) {
+      sliderLabel.className = 'home-edit-label';
+      sliderLabel.append(document.createTextNode('Move the photo'));
+      const slider = document.createElement('input');
+      slider.type = 'range';
+      slider.name = 'focus';
+      slider.min = '10';
+      slider.max = '90';
+      slider.value = String(focusAmount(image?.dataset.focus || ''));
+      const place = () => {
+        previewImage.style.objectPosition = `center ${slider.value}%`;
+      };
+      slider.addEventListener('input', place);
+      place();
+      sliderLabel.append(slider);
+    }
+    const albumLabel = document.createElement('label');
+    albumLabel.className = 'home-edit-label';
+    albumLabel.append(document.createTextNode('Photos on the site'));
+    const albumPick = document.createElement('select');
+    albumPick.name = 'album';
+    const blank = document.createElement('option');
+    blank.value = '';
+    blank.textContent = 'Choose an album';
+    albumPick.append(blank);
+    photoAlbums.forEach((album, albumIndex) => {
+      const option = document.createElement('option');
+      option.value = String(albumIndex);
+      option.textContent = album.title;
+      albumPick.append(option);
+    });
+    const picks = document.createElement('div');
+    picks.className = 'band-picks';
+    albumPick.addEventListener('change', () => {
+      picks.replaceChildren();
+      const album = photoAlbums[Number(albumPick.value)];
+      if (!album) return;
+      album.images.forEach((src) => {
+        const choice = document.createElement('button');
+        choice.type = 'button';
+        choice.dataset.src = src;
+        const thumb = document.createElement('img');
+        thumb.src = src;
+        thumb.alt = '';
+        choice.append(thumb);
+        choice.addEventListener('click', () => {
+          pendingUpload = null;
+          const filePick = form?.querySelector('input[name="upload"]');
+          if (filePick) filePick.value = '';
+          picks.querySelectorAll('button').forEach((button) => button.classList.remove('is-on'));
+          choice.classList.add('is-on');
+          previewImage.src = src;
+          previewImage.dataset.chosen = src;
+          const altField = form?.querySelector('textarea[name="photoAlt"]');
+          if (altField instanceof HTMLTextAreaElement) altField.value = `${album.title} photo`;
+        });
+        picks.append(choice);
+      });
+    });
+    albumLabel.append(albumPick);
+    const uploadLabel = document.createElement('label');
+    uploadLabel.className = 'home-edit-label';
+    uploadLabel.append(document.createTextNode('Or upload a photo'));
+    const upload = document.createElement('input');
+    upload.type = 'file';
+    upload.name = 'upload';
+    upload.accept = 'image/jpeg,image/png,image/webp';
+    upload.addEventListener('change', () => {
+      const file = upload.files?.[0];
+      if (!file) return;
+      if (file.size > 5 * 1024 * 1024) {
+        if (status) status.textContent = 'Use a photo under 5 MB.';
+        upload.value = '';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = String(reader.result || '');
+        pendingUpload = { index, type: file.type, data: result.split(',')[1] || '' };
+        previewImage.src = result;
+        delete previewImage.dataset.chosen;
+        picks.querySelectorAll('button').forEach((button) => button.classList.remove('is-on'));
+      };
+      reader.readAsDataURL(file);
+    });
+    uploadLabel.append(upload);
+    const extras = [albumLabel, picks, uploadLabel];
+    if (String(photoKey).startsWith('bands.')) {
+      const altLabel = document.createElement('label');
+      altLabel.className = 'home-edit-label';
+      altLabel.append(document.createTextNode('Photo description'));
+      const alt = document.createElement('textarea');
+      alt.name = 'photoAlt';
+      alt.rows = 2;
+      alt.maxLength = 180;
+      alt.value = image instanceof HTMLImageElement ? image.alt : '';
+      altLabel.append(alt);
+      extras.push(altLabel);
+    }
+    fields.append(preview, ...(framed ? [] : [sliderLabel]), ...extras);
+  }
+
+  function openSlides() {
+    if (!fields) return;
+    slideDraft = [...document.querySelectorAll('[data-slideshow] .slide-link img')].map((image) => ({
+      src: new URL(image.getAttribute('src') || '', location.origin).pathname,
+      focus: image.dataset.focus || 'center 50%',
+      alt: image.alt || '',
+      upload: null,
+      preview: '',
+    }));
+    let picked = 0;
+    const list = document.createElement('div');
+    list.className = 'band-picks';
+    const preview = document.createElement('div');
+    preview.className = 'slide-preview';
+    const previewImage = document.createElement('img');
+    previewImage.alt = '';
+    preview.append(previewImage);
+    const sliderLabel = document.createElement('label');
+    sliderLabel.className = 'home-edit-label';
+    sliderLabel.append(document.createTextNode('Move the photo'));
+    const slider = document.createElement('input');
+    slider.type = 'range';
+    slider.name = 'focus';
+    slider.min = '10';
+    slider.max = '90';
+    slider.addEventListener('input', () => {
+      const slide = slideDraft[picked];
+      if (!slide) return;
+      slide.focus = `center ${slider.value}%`;
+      previewImage.style.objectPosition = slide.focus;
+      const thumb = list.children[picked]?.querySelector('img');
+      if (thumb) thumb.style.objectPosition = slide.focus;
+    });
+    sliderLabel.append(slider);
+    const tools = document.createElement('div');
+    tools.className = 'slide-tools';
+    const add = document.createElement('button');
+    add.type = 'button';
+    add.textContent = 'Add a photo';
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.textContent = 'Remove this photo';
+    add.addEventListener('click', () => {
+      if (slideDraft.length >= 8) {
+        if (status) status.textContent = 'Use up to 8 photos.';
+        return;
+      }
+      const currentSlide = slideDraft[picked];
+      slideDraft.push({ src: currentSlide.src, focus: currentSlide.focus, alt: currentSlide.alt || '', upload: null, preview: '' });
+      picked = slideDraft.length - 1;
+      if (status) status.textContent = '';
+      showPicked();
+    });
+    remove.addEventListener('click', () => {
+      if (slideDraft.length <= 1) {
+        if (status) status.textContent = 'Keep at least one photo.';
+        return;
+      }
+      slideDraft.splice(picked, 1);
+      picked = Math.min(picked, slideDraft.length - 1);
+      if (status) status.textContent = '';
+      showPicked();
+    });
+    tools.append(add, remove);
+    const albumLabel = document.createElement('label');
+    albumLabel.className = 'home-edit-label';
+    albumLabel.append(document.createTextNode('Photos on the site'));
+    const albumPick = document.createElement('select');
+    albumPick.name = 'album';
+    const blank = document.createElement('option');
+    blank.value = '';
+    blank.textContent = 'Choose an album';
+    albumPick.append(blank);
+    photoAlbums.forEach((album, albumIndex) => {
+      const option = document.createElement('option');
+      option.value = String(albumIndex);
+      option.textContent = album.title;
+      albumPick.append(option);
+    });
+    const picks = document.createElement('div');
+    picks.className = 'band-picks';
+    albumPick.addEventListener('change', () => {
+      picks.replaceChildren();
+      const album = photoAlbums[Number(albumPick.value)];
+      if (!album) return;
+      album.images.forEach((src) => {
+        const choice = document.createElement('button');
+        choice.type = 'button';
+        choice.dataset.src = src;
+        const thumb = document.createElement('img');
+        thumb.src = src;
+        thumb.alt = '';
+        choice.append(thumb);
+        choice.addEventListener('click', () => {
+          const slide = slideDraft[picked];
+          slide.src = src;
+          slide.alt = `${album.title} photo`;
+          slide.upload = null;
+          slide.preview = '';
+          picks.querySelectorAll('button').forEach((button) => button.classList.remove('is-on'));
+          choice.classList.add('is-on');
+          const filePick = form?.querySelector('input[name="upload"]');
+          if (filePick) filePick.value = '';
+          showPicked();
+        });
+        picks.append(choice);
+      });
+    });
+    albumLabel.append(albumPick);
+    const uploadLabel = document.createElement('label');
+    uploadLabel.className = 'home-edit-label';
+    uploadLabel.append(document.createTextNode('Or upload a photo'));
+    const upload = document.createElement('input');
+    upload.type = 'file';
+    upload.name = 'upload';
+    upload.accept = 'image/jpeg,image/png,image/webp';
+    upload.addEventListener('change', () => {
+      const file = upload.files?.[0];
+      if (!file) return;
+      if (file.size > 5 * 1024 * 1024) {
+        if (status) status.textContent = 'Use a photo under 5 MB.';
+        upload.value = '';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = String(reader.result || '');
+        const slide = slideDraft[picked];
+        slide.upload = { type: file.type, data: result.split(',')[1] || '' };
+        slide.preview = result;
+        if (!slide.alt) slide.alt = 'Seaside Dance Academy dancers performing on stage';
+        picks.querySelectorAll('button').forEach((button) => button.classList.remove('is-on'));
+        showPicked();
+      };
+      reader.readAsDataURL(file);
+    });
+    uploadLabel.append(upload);
+    const altLabel = document.createElement('label');
+    altLabel.className = 'home-edit-label';
+    altLabel.append(document.createTextNode('Photo description'));
+    const altField = document.createElement('textarea');
+    altField.name = 'slideAlt';
+    altField.rows = 2;
+    altField.maxLength = 180;
+    altField.addEventListener('input', () => {
+      const slide = slideDraft[picked];
+      if (slide) slide.alt = altField.value;
+    });
+    altLabel.append(altField);
+    fields.append(list, tools, preview, sliderLabel, altLabel, albumLabel, picks, uploadLabel);
+
+    function showPicked() {
+      const slide = slideDraft[picked];
+      previewImage.src = slide.preview || slide.src;
+      previewImage.style.objectPosition = slide.focus;
+      altField.value = slide.alt || '';
+      slider.value = String(focusAmount(slide.focus));
+      list.replaceChildren();
+      slideDraft.forEach((item, index) => {
+        const choice = document.createElement('button');
+        choice.type = 'button';
+        choice.className = index === picked ? 'is-on' : '';
+        choice.setAttribute('aria-label', `Photo ${index + 1}`);
+        const thumb = document.createElement('img');
+        thumb.src = item.preview || item.src;
+        thumb.alt = '';
+        thumb.style.objectPosition = item.focus;
+        choice.append(thumb);
+        choice.addEventListener('click', () => {
+          picked = index;
+          albumPick.value = '';
+          picks.replaceChildren();
+          upload.value = '';
+          showPicked();
+        });
+        list.append(choice);
+      });
+    }
+
+    showPicked();
+  }
+
+  function paintSlideshow(slides) {
+    const frame = document.querySelector('[data-slideshow]');
+    if (!frame || !Array.isArray(slides)) return;
+    frame.querySelectorAll('.slide-link').forEach((node) => node.remove());
+    const before = frame.querySelector('.slide-prev');
+    slides.forEach((slide, index) => {
+      const link = document.createElement('a');
+      link.className = index === 0 ? 'slide-link is-active' : 'slide-link';
+      link.href = '/photos--videos.html';
+      const image = document.createElement('img');
+      const src = String(slide.src || '');
+      image.src = src.startsWith('/images/slides/') ? `${src}?v=${Date.now()}` : src;
+      image.alt = slide.alt || 'Seaside Dance Academy dancers performing on stage';
+      image.width = 1100;
+      image.height = 733;
+      image.style.objectPosition = slide.focus;
+      image.dataset.focus = slide.focus;
+      link.append(image);
+      frame.insertBefore(link, before);
+    });
+    frame.dataset.index = '0';
+  }
+
+  function openEditor(id) {
+    const editor = editors[id];
+    if (!editor || !dialog || !fields || !form) return;
+    current = id;
+    pendingUpload = null;
+    if (title) title.textContent = editor.title;
+    if (note) note.textContent = editor.note;
+    if (status) status.textContent = '';
+    fields.replaceChildren();
+    if (editor.slides) {
+      openSlides();
+      dialog.showModal();
+      return;
+    }
+    if (editor.photo) openPhoto(editor.photo, editor.framed, editor.uploadIndex);
+    for (const [key, label, max, long] of editor.fields) {
+      const wrap = document.createElement('label');
+      wrap.className = 'home-edit-label';
+      wrap.append(document.createTextNode(label));
+      const input = document.createElement(long ? 'textarea' : 'input');
+      input.name = key;
+      input.required = true;
+      input.maxLength = max;
+      input.value = textFor(key);
+      if (input instanceof HTMLTextAreaElement) input.rows = 4;
+      wrap.append(input);
+      fields.append(wrap);
+    }
+    dialog.showModal();
+    fields.querySelector('input, textarea')?.focus();
+  }
+
+  document.querySelectorAll('[data-edit]').forEach((button) => {
+    button.addEventListener('click', () => openEditor(button.dataset.edit || ''));
+  });
+
+  document.querySelector('#home-edit-cancel')?.addEventListener('click', () => dialog?.close());
+
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!current || !status) return;
+    const editor = editors[current];
+    const values = {};
+    let slideUploads = null;
+    if (editor.slides) {
+      slideUploads = [];
+      values.slides = slideDraft.map((slide, index) => {
+        if (slide.upload) slideUploads.push({ index, type: slide.upload.type, data: slide.upload.data });
+        return { src: slide.src, focus: slide.focus, alt: slide.alt || '' };
+      });
+    }
+    if (editor.photo) {
+      const image = document.querySelector(`[data-home-photo="${editor.photo}"]`);
+      const previewImage = form.querySelector('.band-preview img, .portrait-preview img, .hero-preview img');
+      const slider = form.querySelector('input[name="focus"]');
+      const chosen = previewImage?.dataset.chosen || image?.getAttribute('src') || '';
+      const path = chosen.startsWith('data:') ? image?.getAttribute('src') || '' : new URL(chosen, location.origin).pathname;
+      if (editor.focusKey) {
+        values[editor.photo] = path;
+        values[editor.focusKey] = `center ${slider?.value || '50'}%`;
+      } else if (editor.framed) values[editor.photo] = path;
+      else {
+        values[`${editor.photo}.src`] = path;
+        values[`${editor.photo}.focus`] = `center ${slider?.value || '50'}%`;
+        const altInput = form.elements.namedItem('photoAlt');
+        if (altInput instanceof HTMLTextAreaElement) values[`${editor.photo}.alt`] = altInput.value;
+      }
+    }
+    for (const [key] of editor.fields) {
+      const input = form.elements.namedItem(key);
+      values[key] = input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement ? input.value : '';
+    }
+    const save = form.querySelector('.home-edit-save');
+    if (save) save.disabled = true;
+    status.textContent = 'Saving…';
+    try {
+      const response = await fetch('/api/home-page', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ values, image: editor.slides ? null : pendingUpload, images: slideUploads }),
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error || 'The home page could not save.');
+      if (editor.photo) {
+        const image = document.querySelector(`[data-home-photo="${editor.photo}"]`);
+        if (editor.focusKey) {
+          const src = payload.home?.hero?.image;
+          const focus = payload.home?.hero?.focus;
+          if (image && src) {
+            image.src = src.includes('/home-banner.') ? `${src}?v=${Date.now()}` : src;
+            image.style.objectPosition = focus;
+            image.dataset.focus = focus;
+          }
+        } else if (editor.framed) {
+          const src = payload.home?.director?.photo;
+          if (image && src) image.src = src.includes('/director.') ? `${src}?v=${Date.now()}` : src;
+        } else {
+          const band = payload.home?.bands?.[editor.photo.endsWith('1') ? 1 : 0];
+          if (image && band) {
+            image.src = band.src.startsWith('/images/bands/') ? `${band.src}?v=${Date.now()}` : band.src;
+            image.style.objectPosition = band.focus;
+            image.dataset.focus = band.focus;
+            image.alt = band.alt || 'Seaside Dance Academy dancers performing on stage';
+          }
+        }
+        pendingUpload = null;
+      }
+      if (editor.slides) paintSlideshow(payload.home?.slides);
+      for (const [key] of editor.fields) {
+        const value = values[key].replace(/\s+/g, ' ').trim();
+        document.querySelectorAll(`[data-home="${key}"]`).forEach((node) => {
+          node.textContent = value;
+        });
+      }
+      status.textContent = payload.live
+        ? 'Saved. On the live site this shows for everyone after the site rebuilds.'
+        : 'Saved.';
+    } catch (error) {
+      status.textContent = error instanceof Error ? error.message : 'The home page could not save.';
+    } finally {
+      if (save) save.disabled = false;
+    }
+  });
+</script>

@@ -1,0 +1,205 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import { pages } from '../data/site';
+import { albums, gallery } from '../data/albums';
+import qa from '../data/qa.json';
+
+const faq = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: qa.items.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.answer,
+    },
+  })),
+};
+const photoAlbums = [
+  { title: 'Gallery', images: gallery.map((item) => item.src) },
+  ...albums.map((album) => ({
+    title: album.title,
+    images: album.images.length ? album.images : [album.image],
+  })),
+];
+---
+
+<Base title={pages.qa.title} description={pages.qa.description} canonical="/q-and-a.html">
+  <Hero slot="hero" icon="circle-question" image={qa.banner.src} focus={qa.banner.focus} photoKey="qa" quoteKey="qa">
+    <button slot="edit" class="home-edit-btn" type="button" data-edit="banner">Edit</button>
+  </Hero>
+  <section class="section">
+    <div class="container home-block">
+      <button class="home-edit-btn" type="button" data-edit="copy">Edit</button>
+      <h1 class="center">
+        <span class="fs-32" data-qa="title">{qa.title}</span>
+      </h1>
+      <p class="copy center" data-qa="lead">{qa.lead}</p>
+      <div class="gallery-tools">
+        <button class="gallery-add" type="button" id="qa-add">Add a question</button>
+      </div>
+      {qa.items.length > 0 ? (
+        <div class="qa-list">
+          {qa.items.map((item) => (
+            <article class="qa-item" id={item.id}>
+              <div class="class-tools">
+                <button class="gallery-add" type="button" data-qa-edit={item.id}>Edit</button>
+                <button class="gallery-add" type="button" data-qa-delete={item.id}>Delete</button>
+              </div>
+              <h2>{item.question}</h2>
+              <p class="copy">{item.answer}</p>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <p class="copy center">Questions will appear here.</p>
+      )}
+    </div>
+  </section>
+  <dialog class="home-edit-dialog" id="qa-edit-dialog">
+    <form id="qa-edit-form" onsubmit="event.preventDefault()">
+      <h2 id="qa-edit-title">Edit</h2>
+      <p class="home-edit-note" id="qa-edit-note"></p>
+      <div id="qa-edit-fields"></div>
+      <p class="home-edit-status" id="qa-edit-status" role="status"></p>
+      <div class="home-edit-actions">
+        <button class="home-edit-save" type="button">Save</button>
+        <button class="home-edit-cancel" type="button" id="qa-edit-cancel">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+  <dialog class="home-edit-dialog" id="qa-item-dialog">
+    <form id="qa-item-form" onsubmit="event.preventDefault()">
+      <h2 id="qa-item-title">Add a question</h2>
+      <p class="home-edit-note">The question and answer stay in this list.</p>
+      <label class="home-edit-label">
+        Question
+        <textarea name="question" required maxlength="160" rows="3"></textarea>
+      </label>
+      <label class="home-edit-label">
+        Answer
+        <textarea name="answer" required maxlength="800" rows="5"></textarea>
+      </label>
+      <p class="home-edit-status" id="qa-item-status" role="status"></p>
+      <div class="home-edit-actions">
+        <button class="home-edit-save" type="button" id="qa-item-save">Save</button>
+        <button class="home-edit-cancel" type="button" id="qa-item-cancel">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+  <script type="application/ld+json" set:html={JSON.stringify(faq)} />
+</Base>
+
+<script define:vars={{ photoAlbums, qaItems: qa.items }}>
+  window.__pageAlbums = photoAlbums;
+  window.__qaItems = qaItems;
+</script>
+<script>
+  import { mountPageEditor } from '../scripts/page-editor.js';
+
+  const itemDialog = document.querySelector<HTMLDialogElement>('#qa-item-dialog');
+  const itemForm = document.querySelector<HTMLFormElement>('#qa-item-form');
+  const itemTitle = document.querySelector<HTMLElement>('#qa-item-title');
+  const itemStatus = document.querySelector<HTMLElement>('#qa-item-status');
+  let editingId = '';
+
+  function itemField(name: string) {
+    return itemForm?.elements.namedItem(name) as HTMLTextAreaElement | null;
+  }
+
+  function openItem(item?: { id: string; question: string; answer: string }) {
+    if (!itemDialog || !itemForm) return;
+    itemForm.reset();
+    editingId = item?.id || '';
+    if (itemTitle) itemTitle.textContent = item ? 'Edit question' : 'Add a question';
+    if (itemStatus) itemStatus.textContent = '';
+    if (item) {
+      if (itemField('question')) itemField('question')!.value = item.question;
+      if (itemField('answer')) itemField('answer')!.value = item.answer;
+    }
+    itemDialog.showModal();
+  }
+
+  async function saveItems(items: { id: string; question: string; answer: string }[]) {
+    const response = await fetch('/api/qa-page', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items }),
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(payload.error || 'The question could not save.');
+    location.reload();
+  }
+
+  document.querySelector('#qa-add')?.addEventListener('click', () => openItem());
+  document.querySelector('#qa-item-cancel')?.addEventListener('click', () => itemDialog?.close());
+
+  document.querySelector('#qa-item-save')?.addEventListener('click', async () => {
+    if (!itemStatus) return;
+    const question = itemField('question')?.value.trim() || '';
+    const answer = itemField('answer')?.value.trim() || '';
+    if (!question || !answer) {
+      itemStatus.textContent = 'Add a question and an answer.';
+      return;
+    }
+    const save = document.querySelector<HTMLButtonElement>('#qa-item-save');
+    if (save) save.disabled = true;
+    itemStatus.textContent = 'Saving…';
+    try {
+      const items = [...(window.__qaItems || [])];
+      if (editingId) {
+        const index = items.findIndex((item) => item.id === editingId);
+        if (index >= 0) items[index] = { ...items[index], question, answer };
+      } else {
+        items.push({ id: '', question, answer });
+      }
+      await saveItems(items);
+    } catch (error) {
+      itemStatus.textContent = error instanceof Error ? error.message : 'The question could not save.';
+      if (save) save.disabled = false;
+    }
+  });
+
+  document.querySelector('.home-block')?.addEventListener('click', async (event) => {
+    const button = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-qa-edit], [data-qa-delete]');
+    if (!button) return;
+    const id = button.dataset.qaEdit || button.dataset.qaDelete || '';
+    const items = window.__qaItems || [];
+    const item = items.find((entry) => entry.id === id);
+    if (!item) return;
+    if (button.dataset.qaEdit) {
+      openItem(item);
+      return;
+    }
+    if (!window.confirm(`Delete “${item.question}”? This cannot be undone.`)) return;
+    try {
+      await saveItems(items.filter((entry) => entry.id !== id));
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'The question could not be deleted.');
+    }
+  });
+
+  mountPageEditor({
+    photoAlbums: window.__pageAlbums || [],
+    dialog: '#qa-edit-dialog',
+    form: '#qa-edit-form',
+    fields: '#qa-edit-fields',
+    title: '#qa-edit-title',
+    note: '#qa-edit-note',
+    status: '#qa-edit-status',
+    cancel: '#qa-edit-cancel',
+    endpoint: '/api/qa-page',
+    photoKey: 'qa',
+    bannerMark: '/qa-banner.',
+    dataAttr: 'data-qa',
+    copyTitle: 'Q & A',
+    copyNote: 'These words sit above the questions.',
+    bannerNote: 'The banner stays the same size. Slide the photo so faces stay in view. This quote is only on this page.',
+    copyFields: [
+      { key: 'title', label: 'Heading', max: 40 },
+      { key: 'lead', label: 'Introduction', max: 280, long: true },
+    ],
+  });
+</script>

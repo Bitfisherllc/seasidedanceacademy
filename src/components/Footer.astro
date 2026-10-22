@@ -1,7 +1,6 @@
 ---
 import { nav, site } from '../data/site';
 
-const mapQuery = encodeURIComponent(site.addressLine);
 const labels: Record<string, string> = {
   '/seaside-news.html': 'Seaside News',
   '/photos--videos.html': 'Photos & Videos',
@@ -17,7 +16,6 @@ const pages = nav
     <div class="footer-top">
       <div class="footer-brand">
         <img class="footer-logo" src="/images/logos/logo.png" alt="Seaside Dance Academy" width="240" height="24" />
-        <p class="footer-copy">{site.director}, founder</p>
       </div>
       <div class="socials">
         <a href={site.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook">
@@ -35,7 +33,7 @@ const pages = nav
       <div class="footer-block">
         <p class="footer-label">Studio</p>
         <address>
-          <a class="footer-address" href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}>
+          <a class="footer-address" href="/contact.html">
             <i class="fa-solid fa-location-dot icon" aria-hidden="true"></i>
             <span>
               <span class="footer-line">{site.street}</span>
@@ -70,6 +68,16 @@ const pages = nav
               </a>
             </li>
           ))}
+          <li>
+            <a href="/directions.html">
+              <i class="fa-solid fa-diamond-turn-right icon" aria-hidden="true"></i>Directions
+            </a>
+          </li>
+          <li>
+            <a href="/studio.html">
+              <i class="fa-solid fa-lock icon" aria-hidden="true"></i>Class desk
+            </a>
+          </li>
         </ul>
       </nav>
     </div>

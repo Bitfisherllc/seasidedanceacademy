@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { verifyTurnstile } from './turnstile-verify.js';
 
 const FALLBACK =
   'The form is not sending yet. Call (410) 629-0377 or email seasidedanceacademy@gmail.com.';
@@ -69,6 +70,13 @@ export default async function handler(req, res) {
   }
   if (kind === 'registration' && !clean(body.classChoice, 120)) {
     return res.status(400).json({ ok: false, message: 'Choose a class.' });
+  }
+
+  const forwarded = req.headers['x-forwarded-for'];
+  const remoteip = String(Array.isArray(forwarded) ? forwarded[0] : forwarded || req.socket?.remoteAddress || '').split(',')[0].trim();
+  const check = await verifyTurnstile({ token: body.token, action: kind, remoteip });
+  if (!check.ok) {
+    return res.status(check.status).json({ ok: false, message: check.error });
   }
 
   const settings = smtpSettings();

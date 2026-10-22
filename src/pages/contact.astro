@@ -3,23 +3,21 @@ import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import TurnstileField from '../components/TurnstileField.astro';
 import { pages, site } from '../data/site';
-
-const mapQuery = encodeURIComponent(site.addressLine);
 ---
 
 <Base title={pages.contact.title} description={pages.contact.description} canonical="/contact.html">
-  <Hero slot="hero" icon="envelope" image="/images/hero/portrait-smile.jpg" focus="center" />
+  <Hero slot="hero" icon="envelope" image="/images/hero/portrait-smile.jpg" focus="center" quoteKey="contact" />
   <section class="section">
     <div class="container">
       <div class="cols cols-2">
         <div>
           <h1>Contact Seaside Dance Academy</h1>
-          <p class="copy detail-line"><i class="fa-solid fa-location-dot icon" aria-hidden="true"></i>{site.contactAddressLine}</p>
+          <p class="copy detail-line"><i class="fa-solid fa-location-dot icon" aria-hidden="true"></i>{site.addressLine}</p>
           <p class="heading">
             <a class="phone-link" href={`tel:${site.phoneTel}`}><i class="fa-solid fa-phone icon" aria-hidden="true"></i>{site.phoneDisplay}</a>
           </p>
           <p class="copy"><a class="detail-line" href={`mailto:${site.email}`}><i class="fa-solid fa-envelope icon" aria-hidden="true"></i>{site.email}</a></p>
-          <p class="copy"><a class="detail-line address-link" href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`}><i class="fa-solid fa-map-location-dot icon" aria-hidden="true"></i>{site.addressLine}</a></p>
+          <p><a class="btn" href="/directions.html"><span><i class="fa-solid fa-diamond-turn-right icon" aria-hidden="true"></i>Directions</span></a></p>
           <p class="copy">Check us out on <a href={site.facebook} target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-facebook icon" aria-hidden="true"></i>Facebook</a> and <a href={site.instagram} target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-instagram icon" aria-hidden="true"></i>Instagram</a>.</p>
         </div>
         <form class="contact-form" id="contact-form" data-email={site.email} novalidate>

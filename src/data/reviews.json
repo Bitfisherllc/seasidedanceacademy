@@ -1,0 +1,19 @@
+{
+  "rating": 4.4,
+  "count": 7,
+  "url": "https://www.google.com/maps/search/?api=1&query=Seaside%20Dance%20Academy%2016%20S%20Main%20St%20Berlin%20Maryland%2021811",
+  "reviews": [
+    {
+      "author": "Joshua Martin",
+      "rating": 5,
+      "date": "June 9, 2025",
+      "text": "My daughter loves going here, and the talent they have and create is really amazing!"
+    },
+    {
+      "author": "Stephanie Snyder",
+      "rating": 5,
+      "date": "July 9, 2024",
+      "text": "As a first time mom of a little dancer, we were so incredibly impressed with how much my little one learned. Her teachers were the sweetest and she loved every minute of her time with them!! We cannot wait to start up classes again in the fall!!"
+    }
+  ]
+}

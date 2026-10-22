@@ -1,0 +1,12 @@
+{
+  "title": "Reviews",
+  "subtitle": "Google",
+  "heading": "See What Our Dance Families Are Saying!",
+  "lead": "We love hearing from our Seaside Dance Academy families! Explore what our dancers and parents have to say about their experiences, or share your own review with our community.",
+  "readLabel": "Read Our Google Reviews",
+  "writeLabel": "Leave Us a Google Review",
+  "banner": {
+    "src": "/images/hero/group-pink.jpg",
+    "focus": "center 50%"
+  }
+}

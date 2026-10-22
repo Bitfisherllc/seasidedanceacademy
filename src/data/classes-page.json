@@ -1,0 +1,15 @@
+{
+  "title": "Class schedule",
+  "year": "2026–2027",
+  "season": "Registration now open for our 2026-2027 Season",
+  "start": "Classes begin Monday September 14th",
+  "disclaimer": "Classes with less than 4 dancers are subject to cancellation due to low enrollment.",
+  "balletTitle": "Ballet, jazz, and tap",
+  "balletGuide": "This class is for older children who are interested in learning the art of formal dance instruction. The classes listed below are to be used as a general guide for choosing an appropriate class to start your child. Advancement will be determined by age as well as your child’s mastering the correct alignment and movement of the body. Each class is 2 hours. Three dances in the recital.",
+  "hipHopTitle": "Hip hop",
+  "hipHopGuide": "Hip hop uses energetic music to combine coordination, body isolations, and an aerobic work out to burn off youthful energy in a healthy way. Classes are one hour. One dance in the recital. Tuition, all levels: $64 per month.",
+  "banner": {
+    "src": "/images/hero/stage-green.jpg",
+    "focus": "center 50%"
+  }
+}

@@ -1,0 +1,314 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import { pages, site } from '../data/site';
+import { albums, gallery } from '../data/albums';
+import directions from '../data/directions.json';
+
+const destination = encodeURIComponent(site.addressLine);
+const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
+const mapUrl = `https://www.google.com/maps?q=${destination}&z=16&output=embed`;
+const photoAlbums = [
+  { title: 'Gallery', images: gallery.map((item) => item.src) },
+  ...albums.map((album) => ({
+    title: album.title,
+    images: album.images.length ? album.images : [album.image],
+  })),
+];
+---
+
+<Base title={pages.directions.title} description={pages.directions.description} canonical="/directions.html">
+  <Hero slot="hero" icon="diamond-turn-right" image={directions.banner.src} focus={directions.banner.focus} photoKey="directions" quoteKey="directions">
+    <button slot="edit" class="home-edit-btn" type="button" data-edit="banner">Edit</button>
+  </Hero>
+  <section class="section">
+    <div class="container home-block">
+      <button class="home-edit-btn" type="button" data-edit="copy">Edit</button>
+      <h1 class="center">
+        <span class="fs-32" data-directions="title">{directions.title}</span>
+      </h1>
+      <p class="copy center">
+        <a class="icon-line" href="/contact.html">
+          <i class="fa-solid fa-location-dot icon" aria-hidden="true"></i>{site.addressLine}
+        </a>
+      </p>
+      <p class="copy center" data-directions="note">{directions.note}</p>
+      <p class="center">
+        <a class="btn" href={directionsUrl} target="_blank" rel="noopener noreferrer">
+          <span><i class="fa-solid fa-diamond-turn-right icon" aria-hidden="true"></i><span data-directions="button">{directions.button}</span></span>
+        </a>
+      </p>
+      <div class="map-frame">
+        <iframe
+          title="Map of Seaside Dance Academy at 16 S Main St, Berlin, Maryland"
+          src={mapUrl}
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
+      </div>
+      <ul class="fact-list fact-list-center">
+        <li>
+          <i class="fa-solid fa-phone icon" aria-hidden="true"></i>
+          <a href={`tel:${site.phoneTel}`}>{site.phoneDisplay}</a>
+        </li>
+        <li>
+          <i class="fa-solid fa-envelope icon" aria-hidden="true"></i>
+          <a href={`mailto:${site.email}`}>{site.email}</a>
+        </li>
+        <li>
+          <i class="fa-solid fa-clock icon" aria-hidden="true"></i>
+          <span data-directions="hours">{directions.hours}</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+  <dialog class="home-edit-dialog" id="directions-edit-dialog">
+    <form id="directions-edit-form">
+      <h2 id="directions-edit-title">Edit</h2>
+      <p class="home-edit-note" id="directions-edit-note"></p>
+      <div id="directions-edit-fields"></div>
+      <p class="home-edit-status" id="directions-edit-status" role="status"></p>
+      <div class="home-edit-actions">
+        <button class="home-edit-save" type="submit">Save</button>
+        <button class="home-edit-cancel" type="button" id="directions-edit-cancel">Cancel</button>
+      </div>
+    </form>
+  </dialog>
+</Base>
+
+<script define:vars={{ photoAlbums }}>
+  const dialog = document.querySelector('#directions-edit-dialog');
+  const form = document.querySelector('#directions-edit-form');
+  const fields = document.querySelector('#directions-edit-fields');
+  const title = document.querySelector('#directions-edit-title');
+  const note = document.querySelector('#directions-edit-note');
+  const status = document.querySelector('#directions-edit-status');
+  let mode = '';
+  let pendingUpload = null;
+
+  const copyFields = [
+    ['title', 'Heading', 40, false],
+    ['note', 'Paragraph', 320, true],
+    ['button', 'Button', 40, false],
+    ['hours', 'Hours', 80, false],
+  ];
+
+  function focusAmount(value) {
+    const match = String(value || '').match(/(\d{1,2})%/);
+    const amount = match ? Number(match[1]) : 50;
+    return Math.max(10, Math.min(90, amount));
+  }
+
+  function addPhoto() {
+    const image = document.querySelector('[data-home-photo="directions"]');
+    pendingUpload = null;
+    const preview = document.createElement('div');
+    preview.className = 'hero-preview';
+    const previewImage = document.createElement('img');
+    previewImage.alt = '';
+    previewImage.src = image?.src || '';
+    preview.append(previewImage);
+    const sliderLabel = document.createElement('label');
+    sliderLabel.className = 'home-edit-label';
+    sliderLabel.append(document.createTextNode('Move the photo'));
+    const slider = document.createElement('input');
+    slider.type = 'range';
+    slider.name = 'focus';
+    slider.min = '10';
+    slider.max = '90';
+    slider.value = String(focusAmount(image?.dataset.focus || ''));
+    const place = () => {
+      previewImage.style.objectPosition = `center ${slider.value}%`;
+    };
+    slider.addEventListener('input', place);
+    place();
+    sliderLabel.append(slider);
+    const albumLabel = document.createElement('label');
+    albumLabel.className = 'home-edit-label';
+    albumLabel.append(document.createTextNode('Photos on the site'));
+    const albumPick = document.createElement('select');
+    albumPick.name = 'album';
+    const blank = document.createElement('option');
+    blank.value = '';
+    blank.textContent = 'Choose an album';
+    albumPick.append(blank);
+    photoAlbums.forEach((album, albumIndex) => {
+      const option = document.createElement('option');
+      option.value = String(albumIndex);
+      option.textContent = album.title;
+      albumPick.append(option);
+    });
+    const picks = document.createElement('div');
+    picks.className = 'band-picks';
+    albumPick.addEventListener('change', () => {
+      picks.replaceChildren();
+      const album = photoAlbums[Number(albumPick.value)];
+      if (!album) return;
+      album.images.forEach((imageSrc) => {
+        const choice = document.createElement('button');
+        choice.type = 'button';
+        choice.dataset.src = imageSrc;
+        const thumb = document.createElement('img');
+        thumb.src = imageSrc;
+        thumb.alt = '';
+        choice.append(thumb);
+        choice.addEventListener('click', () => {
+          pendingUpload = null;
+          const filePick = form?.querySelector('input[name="upload"]');
+          if (filePick) filePick.value = '';
+          picks.querySelectorAll('button').forEach((button) => button.classList.remove('is-on'));
+          choice.classList.add('is-on');
+          previewImage.src = imageSrc;
+          previewImage.dataset.chosen = imageSrc;
+        });
+        picks.append(choice);
+      });
+    });
+    albumLabel.append(albumPick);
+    const uploadLabel = document.createElement('label');
+    uploadLabel.className = 'home-edit-label';
+    uploadLabel.append(document.createTextNode('Or upload a photo'));
+    const upload = document.createElement('input');
+    upload.type = 'file';
+    upload.name = 'upload';
+    upload.accept = 'image/jpeg,image/png,image/webp';
+    upload.addEventListener('change', () => {
+      const file = upload.files?.[0];
+      if (!file) return;
+      if (file.size > 5 * 1024 * 1024) {
+        if (status) status.textContent = 'Use a photo under 5 MB.';
+        upload.value = '';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        const result = String(reader.result || '');
+        pendingUpload = { type: file.type, data: result.split(',')[1] || '' };
+        previewImage.src = result;
+        delete previewImage.dataset.chosen;
+        picks.querySelectorAll('button').forEach((button) => button.classList.remove('is-on'));
+      };
+      reader.readAsDataURL(file);
+    });
+    uploadLabel.append(upload);
+    fields.append(preview, sliderLabel, albumLabel, picks, uploadLabel);
+  }
+
+  function addHeroQuote() {
+    const wrap = document.createElement('label');
+    wrap.className = 'home-edit-label';
+    wrap.append(document.createTextNode('Quote'));
+    const input = document.createElement('textarea');
+    input.name = 'heroQuote';
+    input.required = true;
+    input.maxLength = 280;
+    input.rows = 4;
+    input.value = document.querySelector('[data-hero-quote]')?.textContent?.trim() || '';
+    wrap.append(input);
+    fields.append(wrap);
+  }
+
+  function openEditor(kind) {
+    if (!dialog || !fields || !form) return;
+    mode = kind;
+    pendingUpload = null;
+    if (status) status.textContent = '';
+    fields.replaceChildren();
+    if (kind === 'banner') {
+      if (title) title.textContent = 'Banner';
+      if (note) note.textContent = 'The banner stays the same size. Slide the photo so faces stay in view. This quote is only on this page.';
+      addPhoto();
+      addHeroQuote();
+    } else {
+      if (title) title.textContent = 'Directions';
+      if (note) note.textContent = 'The address, phone, email, and map stay. The button still opens Google Maps.';
+      for (const [key, label, max, long] of copyFields) {
+        const wrap = document.createElement('label');
+        wrap.className = 'home-edit-label';
+        wrap.append(document.createTextNode(label));
+        const input = document.createElement(long ? 'textarea' : 'input');
+        input.name = key;
+        input.required = true;
+        input.maxLength = max;
+        input.value = document.querySelector(`[data-directions="${key}"]`)?.textContent?.trim() || '';
+        if (input instanceof HTMLTextAreaElement) input.rows = 4;
+        wrap.append(input);
+        fields.append(wrap);
+      }
+    }
+    dialog.showModal();
+  }
+
+  document.querySelectorAll('[data-edit]').forEach((button) => {
+    button.addEventListener('click', () => openEditor(button.dataset.edit || ''));
+  });
+
+  document.querySelector('#directions-edit-cancel')?.addEventListener('click', () => dialog?.close());
+
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!mode || !status) return;
+    const values = {};
+    if (mode === 'banner') {
+      const image = document.querySelector('[data-home-photo="directions"]');
+      const previewImage = form.querySelector('.hero-preview img');
+      const slider = form.querySelector('input[name="focus"]');
+      const chosen = previewImage?.dataset.chosen || image?.getAttribute('src') || '';
+      values['banner.src'] = chosen.startsWith('data:') ? image?.getAttribute('src') || '' : new URL(chosen, location.origin).pathname;
+      values['banner.focus'] = `center ${slider?.value || '50'}%`;
+    } else {
+      for (const [key] of copyFields) {
+        const input = form.elements.namedItem(key);
+        values[key] = input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement ? input.value : '';
+      }
+    }
+    const save = form.querySelector('.home-edit-save');
+    if (save) save.disabled = true;
+    status.textContent = 'Saving…';
+    try {
+      const response = await fetch('/api/directions-page', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ values, image: pendingUpload }),
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error || 'The directions page could not save.');
+      if (mode === 'banner' && payload.page?.banner) {
+        const image = document.querySelector('[data-home-photo="directions"]');
+        const src = payload.page.banner.src;
+        if (image && src) {
+          image.src = src.includes('/directions-banner.') ? `${src}?v=${Date.now()}` : src;
+          image.style.objectPosition = payload.page.banner.focus;
+          image.dataset.focus = payload.page.banner.focus;
+        }
+        const quoteInput = form.querySelector('textarea[name="heroQuote"]');
+        if (quoteInput instanceof HTMLTextAreaElement) {
+          const quoteNode = document.querySelector('[data-hero-quote]');
+          const quoteKey = quoteNode?.dataset.heroKey || '';
+          const quoteResponse = await fetch('/api/hero-quote', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ values: { [quoteKey]: quoteInput.value } }),
+          });
+          const quotePayload = await quoteResponse.json();
+          if (!quoteResponse.ok) throw new Error(quotePayload.error || 'The quote could not save.');
+          if (quoteNode && quoteKey && quotePayload.page?.[quoteKey]) quoteNode.textContent = quotePayload.page[quoteKey];
+        }
+      }
+      if (mode === 'copy' && payload.page) {
+        for (const [key] of copyFields) {
+          const node = document.querySelector(`[data-directions="${key}"]`);
+          if (node && payload.page[key]) node.textContent = payload.page[key];
+        }
+      }
+      pendingUpload = null;
+      status.textContent = payload.live
+        ? 'Saved. On the live site this shows for everyone after the site rebuilds.'
+        : 'Saved.';
+    } catch (error) {
+      status.textContent = error instanceof Error ? error.message : 'The directions page could not save.';
+    } finally {
+      if (save) save.disabled = false;
+    }
+  });
+</script>

@@ -1,0 +1,10 @@
+{
+  "title": "Seaside News",
+  "lead": "Like us on Facebook to stay up to date on all the exciting things happening at Seaside!",
+  "account": "You need a Facebook account to read the full news articles.",
+  "button": "View all Facebook news",
+  "banner": {
+    "src": "/images/hero/stage-lilac.jpg",
+    "focus": "center 50%"
+  }
+}

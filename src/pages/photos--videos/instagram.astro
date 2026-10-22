@@ -2,30 +2,42 @@
 import Base from '../../layouts/Base.astro';
 import Hero from '../../components/Hero.astro';
 import { instagramPosts } from '../../data/instagram';
+import { pages, site } from '../../data/site';
 ---
 
 <Base
-  title="Instagram | Seaside Dance Academy"
-  description="Photos from the Seaside Dance Academy Instagram, @seasidedanceacademy_."
+  title={pages.instagram.title}
+  description={pages.instagram.description}
   canonical="/photos--videos/instagram.html"
+  image={instagramPosts[0]?.image}
 >
-  <Hero slot="hero" icon="instagram" brand image="/images/hero/portrait-smile.jpg" focus="center" />
+  <Hero slot="hero" icon="instagram" brand image="/images/hero/portrait-smile.jpg" focus="center" quoteKey="instagram" />
   <section class="section">
     <div class="container album-page">
       <h1 class="center">
         <span class="fs-32">Instagram</span>
       </h1>
       <p class="copy center icon-line"><i class="fa-brands fa-instagram icon" aria-hidden="true"></i>Photos from @seasidedanceacademy_.</p>
+      <p class="center">
+        <a class="btn" href={site.instagram} target="_blank" rel="noopener noreferrer">
+          <span><i class="fa-brands fa-instagram icon" aria-hidden="true"></i>Follow us on Instagram</span>
+        </a>
+      </p>
       <ul class="photo-grid ig-grid" data-ig-grid>
         {instagramPosts.map((post) => (
           <li>
-            <button type="button" data-photo={post.image} aria-label={`Instagram photo from ${post.date}`}>
-              <img src={post.image} alt="" width="640" height="640" loading="lazy" />
+            <button type="button" data-photo={post.image} aria-label={`Seaside Dance Academy Instagram post from ${post.date}`}>
+              <img src={post.image} alt={`Seaside Dance Academy Instagram post from ${post.date}`} width="640" height="640" loading="lazy" />
               {post.video && <i class="fa-solid fa-play album-play" aria-hidden="true"></i>}
             </button>
           </li>
         ))}
       </ul>
+      <p class="center">
+        <a class="btn" href={site.instagram} target="_blank" rel="noopener noreferrer">
+          <span><i class="fa-brands fa-instagram icon" aria-hidden="true"></i>Follow us on Instagram</span>
+        </a>
+      </p>
       <dialog class="photo-dialog" data-photo-dialog>
         <form method="dialog">
           <button type="submit" aria-label="Close photo"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
@@ -54,10 +66,11 @@ import { instagramPosts } from '../../data/instagram';
         const button = document.createElement('button');
         button.type = 'button';
         button.dataset.photo = post.image;
-        button.setAttribute('aria-label', post.date ? `Instagram photo from ${post.date}` : 'Instagram photo');
+        const label = post.date ? `Seaside Dance Academy Instagram post from ${post.date}` : 'Seaside Dance Academy Instagram post';
+        button.setAttribute('aria-label', label);
         const image = document.createElement('img');
         image.src = post.image;
-        image.alt = '';
+        image.alt = label;
         image.width = 640;
         image.height = 640;
         image.loading = 'lazy';
@@ -80,6 +93,7 @@ import { instagramPosts } from '../../data/instagram';
     const src = button.getAttribute('data-photo');
     if (!src) return;
     full.src = src;
+    full.alt = button.querySelector('img')?.alt || 'Seaside Dance Academy Instagram post';
     dialog.showModal();
   });
 
