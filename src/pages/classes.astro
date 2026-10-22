@@ -345,7 +345,7 @@ const photoAlbums = [
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error || 'The class could not save.');
-      location.reload();
+      window.studioSavedReload();
     } catch (error) {
       classStatus.textContent = error instanceof Error ? error.message : 'The class could not save.';
       if (save) save.disabled = false;
@@ -380,7 +380,7 @@ const photoAlbums = [
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error || 'The class could not be deleted.');
-      location.reload();
+      window.studioSavedReload();
     } catch (error) {
       window.alert(error instanceof Error ? error.message : 'The class could not be deleted.');
     }

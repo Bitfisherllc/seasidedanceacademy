@@ -114,9 +114,7 @@ const quoteNote = quoteKey === 'gallery'
     quoteStatus.textContent = 'Saving…';
     try {
       const payload = await saveHeroQuote(input.value);
-      quoteStatus.textContent = payload.live
-        ? 'Saved. On the live site this shows for everyone after the site rebuilds.'
-        : 'Saved.';
+      window.studioSaved(quoteDialog);
     } catch (error) {
       quoteStatus.textContent = error instanceof Error ? error.message : 'The quote could not save.';
     } finally {

@@ -141,6 +141,61 @@ const graph = {
         link.rel = [...rel].join(' ');
       }
 
+      const savedText = 'Your change has been saved. Viewers can see it live on the site.';
+
+      function showStudioSaved() {
+        let note = document.querySelector('#studio-saved');
+        if (!(note instanceof HTMLElement)) {
+          note = document.createElement('p');
+          note.id = 'studio-saved';
+          note.className = 'studio-saved';
+          note.setAttribute('role', 'status');
+          document.body.append(note);
+        }
+        note.textContent = savedText;
+        note.hidden = false;
+        const bar = document.querySelector('.admin-bar');
+        const header = document.querySelector('.site-header');
+        const anchor = bar instanceof HTMLElement && !bar.hidden ? bar : header;
+        const bottom = anchor instanceof HTMLElement ? anchor.getBoundingClientRect().bottom : 16;
+        note.style.top = `${Math.max(16, Math.round(bottom + 12))}px`;
+      }
+
+      window.studioSaved = (dialog?: HTMLDialogElement | null) => {
+        try {
+          sessionStorage.setItem('studio-saved', '1');
+        } catch {
+          /* The notice still shows on this page if storage is blocked. */
+        }
+        showStudioSaved();
+        dialog?.close();
+        window.setTimeout(() => {
+          try {
+            sessionStorage.removeItem('studio-saved');
+          } catch {
+            /* A blocked storage setting should not stop the page. */
+          }
+        }, 10000);
+      };
+
+      window.studioSavedReload = () => {
+        try {
+          sessionStorage.setItem('studio-saved', '1');
+        } catch {
+          /* The message still shows on this page if storage is blocked. */
+        }
+        location.reload();
+      };
+
+      try {
+        if (sessionStorage.getItem('studio-saved') === '1') {
+          sessionStorage.removeItem('studio-saved');
+          showStudioSaved();
+        }
+      } catch {
+        /* A blocked storage setting should not stop the page. */
+      }
+
       document.querySelectorAll<HTMLAnchorElement>('a[href]').forEach(markOutside);
       document.addEventListener('click', (event) => {
         const link = event.target instanceof Element ? event.target.closest('a[href]') : null;

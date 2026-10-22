@@ -223,9 +223,7 @@ export function mountPageEditor(options) {
         });
       }
       pendingUpload = null;
-      status.textContent = payload.live
-        ? 'Saved. On the live site this shows for everyone after the site rebuilds.'
-        : 'Saved.';
+      window.studioSaved(dialog instanceof HTMLDialogElement ? dialog : null);
     } catch (error) {
       status.textContent = error instanceof Error ? error.message : `The ${options.copyTitle.toLowerCase()} page could not save.`;
     } finally {

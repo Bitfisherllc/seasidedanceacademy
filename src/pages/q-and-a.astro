@@ -130,7 +130,7 @@ const photoAlbums = [
     });
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(payload.error || 'The question could not save.');
-    location.reload();
+    window.studioSavedReload();
   }
 
   document.querySelector('#qa-add')?.addEventListener('click', () => openItem());

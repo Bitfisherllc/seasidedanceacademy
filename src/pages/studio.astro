@@ -243,7 +243,7 @@ import Base from '../layouts/Base.astro';
     return data;
   }
 
-  async function persist(next: DeskClass[], message: string) {
+  async function persist(next: DeskClass[]) {
     if (saving) return false;
     saving = true;
     setStatus('Saving…');
@@ -251,8 +251,7 @@ import Base from '../layouts/Base.astro';
       const data = await request('PUT', { classes: next });
       classes = data.classes;
       render();
-      const base = message || 'Saved.';
-      setStatus(data.live ? `${base} The public site updates after it rebuilds.` : base);
+      setStatus('Your change has been saved. Viewers can see it live on the site.');
       return true;
     } catch (error) {
       setStatus(error instanceof Error ? error.message : 'The class desk could not save.');
@@ -325,7 +324,7 @@ import Base from '../layouts/Base.astro';
     };
     const without = classes.filter((item) => item.id !== editing);
     const next = editing ? classes.map((item) => (item.id === editing ? nextItem : item)) : [...without, nextItem];
-    const saved = await persist(next, editing ? 'Saved.' : 'Class added.');
+    const saved = await persist(next);
     if (saved) clearEditor();
   });
 
@@ -385,12 +384,12 @@ import Base from '../layouts/Base.astro';
       return;
     }
     if (button.dataset.hide) {
-      await persist(classes.map((entry) => (entry.id === id ? { ...entry, hidden: !entry.hidden } : entry)), item.hidden ? 'Class is on the site again.' : 'Class hidden.');
+      await persist(classes.map((entry) => (entry.id === id ? { ...entry, hidden: !entry.hidden } : entry)));
       return;
     }
     if (button.dataset.delete) {
       if (!confirm(`Delete ${item.name}? This cannot be undone.`)) return;
-      await persist(classes.filter((entry) => entry.id !== id), 'Class deleted.');
+      await persist(classes.filter((entry) => entry.id !== id));
       if (editing === id) clearEditor();
       return;
     }
@@ -403,7 +402,7 @@ import Base from '../layouts/Base.astro';
       if (entry.id === swapWith.id) return item;
       return entry;
     });
-    await persist(next, 'Saved.');
+    await persist(next);
   });
 
   openDesk();

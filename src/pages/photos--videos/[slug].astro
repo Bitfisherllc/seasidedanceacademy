@@ -222,8 +222,7 @@ const { album } = Astro.props;
         await post({ photos: { slug, images } });
         document.querySelector(`[data-remove="${CSS.escape(pendingRemove)}"]`)?.closest('.photo-slot')?.remove();
         pendingRemove = '';
-        status.textContent = 'Saved.';
-        dialog?.close();
+        window.studioSaved(dialog instanceof HTMLDialogElement ? dialog : null);
       } else if (mode === 'add') {
         if (!pendingFiles.length) throw new Error('Choose a photo to add.');
         const altInput = fields?.querySelector('textarea[name="alt"]');
@@ -244,8 +243,7 @@ const { album } = Astro.props;
           }
         }
         pendingFiles = [];
-        status.textContent = 'Saved.';
-        dialog?.close();
+        window.studioSaved(dialog instanceof HTMLDialogElement ? dialog : null);
       }
     } catch (error) {
       status.textContent = error instanceof Error ? error.message : 'The gallery could not save.';

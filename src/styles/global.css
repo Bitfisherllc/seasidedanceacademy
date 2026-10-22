@@ -2039,6 +2039,25 @@ body.studio-in:not(.studio-visitor) .home-edit-btn {
   display: inline-block;
 }
 
+.studio-saved {
+  position: fixed;
+  z-index: 40;
+  left: 50%;
+  top: 180px;
+  transform: translateX(-50%);
+  width: min(560px, calc(100vw - 32px));
+  margin: 0;
+  padding: 14px 16px;
+  background: #fff;
+  color: var(--ink);
+  border-top: 3px solid var(--gold);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+  font-family: Montserrat, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+}
+
 .home-edit-dialog {
   width: min(560px, calc(100vw - 32px));
   max-height: calc(100vh - 32px);

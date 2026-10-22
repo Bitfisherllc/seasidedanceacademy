@@ -346,6 +346,11 @@ const photoAlbums = [
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.error || 'The photos page could not save.');
       if (mode === 'new' && payload.slug) {
+        try {
+          sessionStorage.setItem('studio-saved', '1');
+        } catch {
+          /* The next page still opens if storage is blocked. */
+        }
         location.assign(`/photos--videos/${payload.slug}.html`);
         return;
       }
@@ -392,9 +397,7 @@ const photoAlbums = [
         }
       }
       pendingUpload = null;
-      status.textContent = payload.live
-        ? 'Saved. On the live site this shows for everyone after the site rebuilds.'
-        : 'Saved.';
+      window.studioSaved(dialog instanceof HTMLDialogElement ? dialog : null);
     } catch (error) {
       status.textContent = error instanceof Error ? error.message : 'The photos page could not save.';
     } finally {
