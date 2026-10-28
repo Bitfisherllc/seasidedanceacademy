@@ -25,7 +25,6 @@ export const site = {
 export const nav = [
   { href: '/', label: 'Home', icon: 'house', brand: false },
   { href: '/classes.html', label: 'Classes', icon: 'person-running', brand: false },
-  { href: '/registration.html', label: 'Registration', icon: 'clipboard-list', brand: false },
   { href: '/seaside-news.html', label: 'News', icon: 'facebook', brand: true },
   { href: '/photos--videos.html', label: 'Photos', icon: 'images', brand: false },
   { href: '/reviews.html', label: 'Reviews', icon: 'star', brand: false },
@@ -75,9 +74,9 @@ export const pages = {
       'Get directions to Seaside Dance Academy at 16 S Main St, Berlin, Maryland 21811, about ten miles from Ocean City and Assateague Island.',
   },
   qa: {
-    title: 'Class Questions | Seaside Dance Academy',
+    title: 'Dance Class Questions | Seaside Dance Academy',
     description:
-      'Answers about start dates, ages, tuition, and the Seaside Dance Academy studio at 16 S Main St in Berlin, Maryland. Classes begin September 14.',
+      'Answers about dance classes in Berlin, Maryland, near Ocean City. Styles, ages, tuition, and registration at Seaside Dance Academy.',
   },
   instagram: {
     title: 'Instagram | Seaside Dance Academy',

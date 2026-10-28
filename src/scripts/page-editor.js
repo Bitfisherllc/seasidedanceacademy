@@ -1,3 +1,5 @@
+import { appendRichField, paintRich } from './rich-text.js';
+
 export function appendQuoteField(fields) {
   const wrap = document.createElement('label');
   wrap.className = 'home-edit-label';
@@ -158,13 +160,17 @@ export function mountPageEditor(options) {
         const wrap = document.createElement('label');
         wrap.className = 'home-edit-label';
         wrap.append(document.createTextNode(field.label));
-        const input = document.createElement(field.long ? 'textarea' : 'input');
-        input.name = field.key;
-        input.required = true;
-        input.maxLength = field.max;
-        input.value = document.querySelector(`[${options.dataAttr}="${field.key}"]`)?.textContent?.trim() || '';
-        if (input instanceof HTMLTextAreaElement) input.rows = 4;
-        wrap.append(input);
+        if (field.long) {
+          const node = document.querySelector(`[${options.dataAttr}="${field.key}"]`);
+          appendRichField(wrap, { name: field.key, max: field.max, html: node?.innerHTML || '' });
+        } else {
+          const input = document.createElement('input');
+          input.name = field.key;
+          input.required = true;
+          input.maxLength = field.max;
+          input.value = document.querySelector(`[${options.dataAttr}="${field.key}"]`)?.textContent?.trim() || '';
+          wrap.append(input);
+        }
         fields.append(wrap);
       });
     }
@@ -189,6 +195,10 @@ export function mountPageEditor(options) {
       values['banner.src'] = chosen.startsWith('data:') ? image?.getAttribute('src') || '' : new URL(chosen, location.origin).pathname;
       values['banner.focus'] = `center ${slider?.value || '50'}%`;
     } else {
+      if (form.querySelector('.rich-area[data-over]')) {
+        status.textContent = 'Shorten the paragraph. Formatting is not counted, but the words are.';
+        return;
+      }
       options.copyFields.forEach((field) => {
         const input = form.elements.namedItem(field.key);
         values[field.key] = input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement ? input.value : '';
@@ -219,7 +229,10 @@ export function mountPageEditor(options) {
       if (mode === 'copy' && payload.page) {
         options.copyFields.forEach((field) => {
           const node = document.querySelector(`[${options.dataAttr}="${field.key}"]`);
-          if (node && payload.page[field.key]) node.textContent = payload.page[field.key];
+          if (node && payload.page[field.key]) {
+            if (field.long) paintRich(node, payload.page[field.key]);
+            else node.textContent = payload.page[field.key];
+          }
         });
       }
       pendingUpload = null;

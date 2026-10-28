@@ -4,6 +4,7 @@ import Hero from '../components/Hero.astro';
 import { pages } from '../data/site';
 import { albums, gallery } from '../data/albums';
 import qa from '../data/qa.json';
+import { plainText, richHtml } from '../../api/rich-text.js';
 
 const faq = {
   '@context': 'https://schema.org',
@@ -13,7 +14,7 @@ const faq = {
     name: item.question,
     acceptedAnswer: {
       '@type': 'Answer',
-      text: item.answer,
+      text: plainText(item.answer),
     },
   })),
 };
@@ -36,7 +37,7 @@ const photoAlbums = [
       <h1 class="center">
         <span class="fs-32" data-qa="title">{qa.title}</span>
       </h1>
-      <p class="copy center" data-qa="lead">{qa.lead}</p>
+      <div class="copy center" data-qa="lead" set:html={richHtml(qa.lead)} />
       <div class="gallery-tools">
         <button class="gallery-add" type="button" id="qa-add">Add a question</button>
       </div>
@@ -49,7 +50,7 @@ const photoAlbums = [
                 <button class="gallery-add" type="button" data-qa-delete={item.id}>Delete</button>
               </div>
               <h2>{item.question}</h2>
-              <p class="copy">{item.answer}</p>
+              <div class="copy" set:html={richHtml(item.answer)} />
             </article>
           ))}
         </div>
@@ -67,6 +68,7 @@ const photoAlbums = [
       <div class="home-edit-actions">
         <button class="home-edit-save" type="button">Save</button>
         <button class="home-edit-cancel" type="button" id="qa-edit-cancel">Cancel</button>
+        <button class="home-edit-close" type="button">Close</button>
       </div>
     </form>
   </dialog>
@@ -86,6 +88,7 @@ const photoAlbums = [
       <div class="home-edit-actions">
         <button class="home-edit-save" type="button" id="qa-item-save">Save</button>
         <button class="home-edit-cancel" type="button" id="qa-item-cancel">Cancel</button>
+        <button class="home-edit-close" type="button">Close</button>
       </div>
     </form>
   </dialog>
@@ -98,6 +101,9 @@ const photoAlbums = [
 </script>
 <script>
   import { mountPageEditor } from '../scripts/page-editor.js';
+  import { upgradeTextarea } from '../scripts/rich-text.js';
+
+  upgradeTextarea(document.querySelector('textarea[name="answer"]'));
 
   const itemDialog = document.querySelector<HTMLDialogElement>('#qa-item-dialog');
   const itemForm = document.querySelector<HTMLFormElement>('#qa-item-form');
@@ -119,6 +125,7 @@ const photoAlbums = [
       if (itemField('question')) itemField('question')!.value = item.question;
       if (itemField('answer')) itemField('answer')!.value = item.answer;
     }
+    itemField('answer')?.dispatchEvent(new Event('rich-sync'));
     itemDialog.showModal();
   }
 

@@ -4,6 +4,7 @@ import Hero from '../components/Hero.astro';
 import { pages, site } from '../data/site';
 import { albums, gallery } from '../data/albums';
 import directions from '../data/directions.json';
+import { richHtml } from '../../api/rich-text.js';
 
 const destination = encodeURIComponent(site.addressLine);
 const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
@@ -32,7 +33,7 @@ const photoAlbums = [
           <i class="fa-solid fa-location-dot icon" aria-hidden="true"></i>{site.addressLine}
         </a>
       </p>
-      <p class="copy center" data-directions="note">{directions.note}</p>
+      <div class="copy center" data-directions="note" set:html={richHtml(directions.note)} />
       <p class="center">
         <a class="btn" href={directionsUrl} target="_blank" rel="noopener noreferrer">
           <span><i class="fa-solid fa-diamond-turn-right icon" aria-hidden="true"></i><span data-directions="button">{directions.button}</span></span>
@@ -71,6 +72,7 @@ const photoAlbums = [
       <div class="home-edit-actions">
         <button class="home-edit-save" type="submit">Save</button>
         <button class="home-edit-cancel" type="button" id="directions-edit-cancel">Cancel</button>
+        <button class="home-edit-close" type="button">Close</button>
       </div>
     </form>
   </dialog>
@@ -226,13 +228,17 @@ const photoAlbums = [
         const wrap = document.createElement('label');
         wrap.className = 'home-edit-label';
         wrap.append(document.createTextNode(label));
-        const input = document.createElement(long ? 'textarea' : 'input');
-        input.name = key;
-        input.required = true;
-        input.maxLength = max;
-        input.value = document.querySelector(`[data-directions="${key}"]`)?.textContent?.trim() || '';
-        if (input instanceof HTMLTextAreaElement) input.rows = 4;
-        wrap.append(input);
+        if (long && typeof window.studioRichField === 'function') {
+          const node = document.querySelector(`[data-directions="${key}"]`);
+          window.studioRichField(wrap, { name: key, max, html: node?.innerHTML || '' });
+        } else {
+          const input = document.createElement('input');
+          input.name = key;
+          input.required = true;
+          input.maxLength = max;
+          input.value = document.querySelector(`[data-directions="${key}"]`)?.textContent?.trim() || '';
+          wrap.append(input);
+        }
         fields.append(wrap);
       }
     }
@@ -257,6 +263,10 @@ const photoAlbums = [
       values['banner.src'] = chosen.startsWith('data:') ? image?.getAttribute('src') || '' : new URL(chosen, location.origin).pathname;
       values['banner.focus'] = `center ${slider?.value || '50'}%`;
     } else {
+      if (form.querySelector('.rich-area[data-over]')) {
+        status.textContent = 'Shorten the paragraph. Formatting is not counted, but the words are.';
+        return;
+      }
       for (const [key] of copyFields) {
         const input = form.elements.namedItem(key);
         values[key] = input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement ? input.value : '';
@@ -296,9 +306,12 @@ const photoAlbums = [
         }
       }
       if (mode === 'copy' && payload.page) {
-        for (const [key] of copyFields) {
+        for (const [key, , , long] of copyFields) {
           const node = document.querySelector(`[data-directions="${key}"]`);
-          if (node && payload.page[key]) node.textContent = payload.page[key];
+          if (node && payload.page[key]) {
+            if (long && typeof window.studioPaintRich === 'function') window.studioPaintRich(node, payload.page[key]);
+            else node.textContent = payload.page[key];
+          }
         }
       }
       pendingUpload = null;

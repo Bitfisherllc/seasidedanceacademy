@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import seed from '../src/data/classes.json' with { type: 'json' };
 import { clockValue } from '../src/data/class-time.js';
+import { richWords } from './rich-text.js';
 
 const GROUPS = [
   { id: 'grow', label: 'Dance & Grow and Pre' },
@@ -211,7 +212,7 @@ function normalize(input, previous) {
       availability,
       amount,
       billing,
-      summary: text(item?.summary, 600, 'Description', true),
+      summary: richWords(item?.summary, 'Description', 600),
       recital: text(item?.recital, 200, 'Recital note', false),
       group,
       hidden: Boolean(item?.hidden),

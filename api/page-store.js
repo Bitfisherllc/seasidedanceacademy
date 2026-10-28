@@ -3,6 +3,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { readSession } from './studio-classes.js';
+import { richWords } from './rich-text.js';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PUBLIC = path.join(ROOT, 'public');
@@ -41,7 +42,7 @@ function cleanList(items, spec) {
   const used = new Set();
   return items.map((item) => {
     const question = words(item?.question, spec.question[0], spec.question[1]);
-    const answer = words(item?.answer, spec.answer[0], spec.answer[1]);
+    const answer = richWords(item?.answer, spec.answer[0], spec.answer[1]);
     let id = String(item?.id || '').trim().toLowerCase();
     const keep = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id) && !used.has(id);
     if (!keep) {
@@ -173,9 +174,9 @@ function apply(current, body, options) {
     }
     if (!options.text[key] && !allowBanner) throw new Error('That part of the page cannot be changed.');
   }
-  for (const [key, [label, max]] of Object.entries(options.text)) {
+  for (const [key, [label, max, rich]] of Object.entries(options.text)) {
     if (!Object.prototype.hasOwnProperty.call(incoming, key)) continue;
-    next[key] = words(incoming[key], label, max);
+    next[key] = rich ? richWords(incoming[key], label, max) : words(incoming[key], label, max);
     changed = true;
   }
   if (allowBanner && (Object.prototype.hasOwnProperty.call(incoming, 'banner.src') || Object.prototype.hasOwnProperty.call(incoming, 'banner.focus'))) {

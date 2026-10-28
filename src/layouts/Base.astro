@@ -8,6 +8,8 @@ import Footer from '../components/Footer.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import BackToTop from '../components/BackToTop.astro';
 import { site } from '../data/site';
+import colors from '../data/colors.json';
+import { colorStyle } from '../data/color-scheme.js';
 
 interface Props {
   title: string;
@@ -108,9 +110,10 @@ const graph = {
     <script type="application/ld+json" set:html={JSON.stringify(graph)} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
   </head>
   <body>
+    <style is:inline set:html={colorStyle(colors)}></style>
     <Header />
     <div class="page-shell">
       <slot name="hero" />
@@ -122,6 +125,8 @@ const graph = {
     </div>
     <BackToTop />
     <script>
+      import { appendRichField, paintRich } from '../scripts/rich-text.js';
+
       const siteHost = location.hostname.replace(/^www\./, '');
 
       function markOutside(link: HTMLAnchorElement) {
@@ -178,6 +183,9 @@ const graph = {
         }, 10000);
       };
 
+      window.studioRichField = appendRichField;
+      window.studioPaintRich = paintRich;
+
       window.studioSavedReload = () => {
         try {
           sessionStorage.setItem('studio-saved', '1');
@@ -195,6 +203,13 @@ const graph = {
       } catch {
         /* A blocked storage setting should not stop the page. */
       }
+
+      document.addEventListener('click', (event) => {
+        const button = event.target instanceof Element ? event.target.closest('.home-edit-close') : null;
+        if (!(button instanceof HTMLButtonElement)) return;
+        const box = button.closest('dialog');
+        if (box instanceof HTMLDialogElement) box.close();
+      });
 
       document.querySelectorAll<HTMLAnchorElement>('a[href]').forEach(markOutside);
       document.addEventListener('click', (event) => {

@@ -12,11 +12,11 @@ const options = {
     year: ['Season', 20],
     season: ['Registration line', 120],
     start: ['Start line', 80],
-    disclaimer: ['Note', 240],
+    disclaimer: ['Note', 240, true],
     balletTitle: ['Ballet heading', 60],
-    balletGuide: ['Ballet paragraph', 600],
+    balletGuide: ['Ballet paragraph', 600, true],
     hipHopTitle: ['Hip hop heading', 40],
-    hipHopGuide: ['Hip hop paragraph', 500],
+    hipHopGuide: ['Hip hop paragraph', 500, true],
   },
 };
 

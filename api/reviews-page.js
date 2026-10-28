@@ -11,7 +11,7 @@ const options = {
     title: ['Heading', 40],
     subtitle: ['Subtitle', 40],
     heading: ['Section heading', 80],
-    lead: ['Paragraph', 360],
+    lead: ['Paragraph', 360, true],
     readLabel: ['Read button', 40],
     writeLabel: ['Write button', 40],
   },

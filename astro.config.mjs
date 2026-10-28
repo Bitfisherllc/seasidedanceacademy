@@ -17,6 +17,7 @@ import { handleNews } from './api/news-page.js';
 import { handleReviewsPage } from './api/reviews-page.js';
 import { handleHeroQuote } from './api/hero-quote.js';
 import { handleQa } from './api/qa-page.js';
+import { handleColors } from './api/colors.js';
 import { reviewsForClient } from './api/google-reviews.js';
 
 function readBody(req) {
@@ -95,6 +96,10 @@ export default defineConfig({
             }
             if (path === '/api/qa-page') {
               await handleQa(req, res);
+              return;
+            }
+            if (path === '/api/colors') {
+              await handleColors(req, res);
               return;
             }
             if (path === '/api/google-reviews') {

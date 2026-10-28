@@ -5,6 +5,7 @@ import { newsPosts } from '../data/news';
 import { pages, site } from '../data/site';
 import { albums, gallery } from '../data/albums';
 import newsPage from '../data/news-page.json';
+import { richHtml } from '../../api/rich-text.js';
 
 const posts = [...newsPosts].sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
 
@@ -28,18 +29,18 @@ const photoAlbums = [
     <button slot="edit" class="home-edit-btn" type="button" data-edit="banner">Edit</button>
   </Hero>
   <section class="section">
-    <div class="container home-block">
+    <div class="news-page home-block">
       <button class="home-edit-btn" type="button" data-edit="copy">Edit</button>
       <h1 class="center">
         <span class="fs-32" data-news="title">{newsPage.title}</span>
       </h1>
-      <p class="copy center trust-lead" data-news="lead">{newsPage.lead}</p>
-      <p class="copy center" data-news="account">{newsPage.account}</p>
+      <div class="copy center trust-lead" data-news="lead" set:html={richHtml(newsPage.lead)} />
+      <div class="copy center" data-news="account" set:html={richHtml(newsPage.account)} />
       <div class="news-list" data-news-list>
         {posts.map((post) => (
           <article class="news-post">
             <span class="news-photo">
-              <img src={post.image} alt={newsAlt(post)} width="960" height="540" loading="lazy" />
+              <img src={post.image} alt={newsAlt(post)} width="960" height="540" loading="lazy" decoding="async" />
               <i class="fa-solid fa-play album-play" aria-hidden="true"></i>
             </span>
             {post.date && (
@@ -66,6 +67,7 @@ const photoAlbums = [
       <div class="home-edit-actions">
         <button class="home-edit-save" type="button">Save</button>
         <button class="home-edit-cancel" type="button" id="news-edit-cancel">Cancel</button>
+        <button class="home-edit-close" type="button">Close</button>
       </div>
     </form>
   </dialog>
@@ -103,6 +105,7 @@ const photoAlbums = [
     image.width = 960;
     image.height = 540;
     image.loading = 'lazy';
+    image.decoding = 'async';
     const icon = document.createElement('i');
     icon.className = 'fa-solid fa-play album-play';
     icon.setAttribute('aria-hidden', 'true');

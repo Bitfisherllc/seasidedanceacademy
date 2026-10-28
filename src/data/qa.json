@@ -1,40 +1,70 @@
 {
-  "title": "Q & A",
-  "lead": "Answers from the class schedule, registration, and studio information.",
+  "title": "Questions about dance classes",
+  "lead": "Answers for families looking at dance studios in Berlin, Maryland, and near Ocean City. Each answer comes from the Seaside Dance Academy class schedule and the studio’s published information.",
   "banner": {
     "src": "/images/hero/stage-lilac.jpg",
     "focus": "center 50%"
   },
   "items": [
     {
-      "id": "when-classes-start",
-      "question": "When do classes start?",
-      "answer": "Registration is now open for the 2026-2027 season. Classes begin Monday September 14th."
+      "id": "dance-classes-near-ocean-city",
+      "question": "Where can I take dance classes near Ocean City, Maryland?",
+      "answer": "Seaside Dance Academy is in Berlin, Maryland, about ten miles from the beaches of Ocean City and Assateague Island. The studio is at 16 S Main St, Berlin, Maryland 21811. It opened in September 2001 and has taught dance in Worcester County since then. Registration is now open for the 2026-2027 season. Classes begin Monday September 14th. Call (410) 629-0377."
     },
     {
-      "id": "where-is-the-studio",
-      "question": "Where is the studio?",
-      "answer": "Seaside Dance Academy is at 16 S Main St, Berlin, Maryland 21811."
+      "id": "dance-studio-berlin-maryland",
+      "question": "Is there a dance studio in Berlin, Maryland?",
+      "answer": "Yes. Seaside Dance Academy is at 16 S Main St, Berlin, Maryland 21811, in the heart of historic Berlin. The studio has four dance rooms and 10,000 square feet, with mirrors, ballet barres, and hardwood and marley dance floors. Call (410) 629-0377 or email seasidedanceacademy@gmail.com. Desk staff are available during operation hours."
     },
     {
-      "id": "how-do-i-reach-the-studio",
-      "question": "How do I reach the studio?",
-      "answer": "Call (410) 629-0377 or email seasidedanceacademy@gmail.com. Desk staff are available during operation hours."
+      "id": "what-seaside-is-known-for",
+      "question": "What is Seaside Dance Academy known for?",
+      "answer": "Seaside Dance Academy has taught dance in Worcester County since September 2001. The studio describes its training as strong technical dance training in a supportive and encouraging environment, and says it provides some of the best dance education in the area. Lisa Tingle is the founder and studio director. Classes are for ages 3 and up."
     },
     {
-      "id": "what-ages",
-      "question": "What ages can take class?",
-      "answer": "Dance & Grow 1 is for ages 3 and 4. The class schedule lists an age for every class."
+      "id": "dance-styles",
+      "question": "What dance styles does Seaside Dance Academy teach?",
+      "answer": "The 2026-2027 schedule includes ballet, lyrical, jazz, tap, hip hop, jazz and acro, Broadway, and pom. Dance & Grow starts at ages 3 and 4, and other classes continue through ages 12 and up. Private lessons are by request and are scheduled upon availability. Ages, days, and times are listed on the Classes page."
+    },
+    {
+      "id": "classes-for-ages-3-and-4",
+      "question": "Are there dance classes for 3 and 4 year olds near Ocean City?",
+      "answer": "Yes. Dance & Grow 1 at Seaside Dance Academy is a 45-minute class for ages 3 and 4. It introduces movement, stretching, and ballet in a playful way. The class meets Monday, 5:00 PM–5:45 PM, and Thursday, 4:30 PM–5:15 PM. Tuition is $49 per month, and it includes one dance in the recital. The studio is in Berlin, about ten miles from Ocean City."
+    },
+    {
+      "id": "hip-hop-and-pom",
+      "question": "Are there hip hop or pom classes near Berlin and Ocean City?",
+      "answer": "Yes. Seaside Dance Academy in Berlin offers Tiny Tot Hip Hop for ages 5–7, Junior Hip Hop for ages 8–11, and Teen Hip Hop for ages 12 and up. Junior Pom is for ages 8–11, and Pom & Dance Team Prep is for ages 12 and up. Each of those classes is $64 per month. The studio is about ten miles from Ocean City."
     },
     {
       "id": "how-much",
-      "question": "How much does a class cost?",
-      "answer": "Each class lists its price per month. Private lessons are $30 per half hour."
+      "question": "How much do dance classes cost at Seaside Dance Academy?",
+      "answer": "Each class lists its own monthly price. On the 2026-2027 schedule, monthly tuition is $49, $64, $79, or $96, depending on the class. Dance & Grow 1 is $49 per month. Private lessons are $30 per half hour and are scheduled upon availability. Call (410) 629-0377 to ask about a specific class."
+    },
+    {
+      "id": "when-classes-start",
+      "question": "When do the 2026-2027 dance classes start?",
+      "answer": "Registration is now open for the 2026-2027 season at Seaside Dance Academy in Berlin, Maryland. Classes begin Monday September 14th. Register on the registration page, call (410) 629-0377, or email seasidedanceacademy@gmail.com."
+    },
+    {
+      "id": "how-to-register",
+      "question": "How do I register for dance classes in Berlin, Maryland?",
+      "answer": "Register for Seaside Dance Academy on the registration page, call (410) 629-0377, or email seasidedanceacademy@gmail.com. Desk staff are available during operation hours. The studio is at 16 S Main St, Berlin, Maryland 21811."
+    },
+    {
+      "id": "teens-and-beginners",
+      "question": "Can teens and beginners take class at Seaside Dance Academy?",
+      "answer": "Yes. The studio welcomes all levels. Dance & Grow 1 is the class for ages 3 and 4. The schedule also includes classes for ages 12 and up in ballet, lyrical, jazz, tap, hip hop, Broadway, and pom. Each class lists its age and what it covers."
     },
     {
       "id": "small-classes",
-      "question": "What if only a few dancers sign up?",
-      "answer": "Classes with less than 4 dancers are subject to cancellation due to low enrollment."
+      "question": "What happens if only a few dancers sign up for a class?",
+      "answer": "Classes with less than 4 dancers are subject to cancellation due to low enrollment. That note is on the Seaside Dance Academy class schedule. Call (410) 629-0377 before you register if you want to ask about a class."
+    },
+    {
+      "id": "how-do-i-reach-the-studio",
+      "question": "How do I contact Seaside Dance Academy or get directions?",
+      "answer": "Call (410) 629-0377 or email seasidedanceacademy@gmail.com. Desk staff are available during operation hours. The studio is at 16 S Main St, Berlin, Maryland 21811, about ten miles from Ocean City and Assateague Island. The Directions page has the map."
     }
   ]
 }

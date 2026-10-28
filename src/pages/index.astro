@@ -8,6 +8,7 @@ import { homeClasses } from '../data/classes';
 import { studioFacts } from '../data/studio';
 import { albums, gallery } from '../data/albums';
 import home from '../data/home.json';
+import { richHtml } from '../../api/rich-text.js';
 
 const phoneTel = home.welcome.phone.replace(/\D/g, '');
 const photoAlbums = [
@@ -17,7 +18,7 @@ const photoAlbums = [
 ---
 
 <Base title={pages.home.title} description={pages.home.description} canonical="/">
-  <Hero slot="hero" icon="house" home image={home.hero.image} focus={home.hero.focus}>
+  <Hero slot="hero" icon="house" home image={home.hero.image} focus={home.hero.focus} slides={home.slides}>
     <button slot="edit" class="home-edit-btn" type="button" data-edit="hero">Edit</button>
     <div class="hero-help">
       <p class="hero-line" data-home="hero.line">{home.hero.line}</p>
@@ -57,7 +58,7 @@ const photoAlbums = [
             <span class="fs-16" data-home="welcome.place">{home.welcome.place}</span><br />
             <span class="fs-18" data-home="welcome.name">{home.welcome.name}</span>
           </h1>
-          <p class="copy" data-home="welcome.quote">{home.welcome.quote}</p>
+          <div class="copy" data-home="welcome.quote" set:html={richHtml(home.welcome.quote)} />
           <p class="heading">
             <span class="fs-24 tone-gray" data-home="welcome.call">{home.welcome.call}</span><br />
             <a class="phone-link" href={`tel:${phoneTel}`}><i class="fa-solid fa-phone icon" aria-hidden="true"></i>{home.welcome.phone}</a>
@@ -74,7 +75,7 @@ const photoAlbums = [
         <span class="fs-32" data-home="studio.title">{home.studio.title}</span><br />
         <span class="fs-18 tone-soft" data-home="studio.subtitle">{home.studio.subtitle}</span>
       </h2>
-      {home.studio.paragraphs.map((paragraph, index) => <p class="copy center trust-lead" data-home={`studio.paragraphs.${index}`}>{paragraph}</p>)}
+      {home.studio.paragraphs.map((paragraph, index) => <div class="copy center trust-lead" data-home={`studio.paragraphs.${index}`} set:html={richHtml(paragraph)} />)}
       <div class="cols cols-4 trust-points">
         {home.studio.facts.map((label, index) => (
           <p class="trust-point">
@@ -114,17 +115,34 @@ const photoAlbums = [
     <img src={home.bands[1].src} alt={home.bands[1].alt || 'Seaside Dance Academy dancers performing on stage'} width="1100" height="733" style={`object-position: ${home.bands[1].focus}`} data-home-photo="bands.1" data-focus={home.bands[1].focus} loading="lazy" />
   </div>
 
-  <section class="section">
+  <section class="section director-section">
+    <svg class="director-wave" viewBox="0 0 1440 800" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="director-wave-fade" x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0%" stop-color="var(--green)" stop-opacity="0.5"></stop>
+          <stop offset="32%" stop-color="var(--green)" stop-opacity="0.32"></stop>
+          <stop offset="58%" stop-color="var(--menu)" stop-opacity="0.16"></stop>
+          <stop offset="86%" stop-color="var(--menu)" stop-opacity="0"></stop>
+        </linearGradient>
+      </defs>
+      <path fill="url(#director-wave-fade)" d="M0 250C240 140 480 360 720 220C960 80 1200 340 1440 180L1440 800L0 800Z"></path>
+      <path fill="url(#director-wave-fade)" opacity="0.8" d="M0 400C220 280 500 520 760 360C1020 200 1240 480 1440 320L1440 800L0 800Z"></path>
+      <path fill="url(#director-wave-fade)" opacity="0.9" d="M0 540C260 420 520 660 800 500C1080 340 1260 620 1440 460L1440 800L0 800Z"></path>
+    </svg>
     <div class="container home-block">
       <button class="home-edit-btn" type="button" data-edit="director">Edit</button>
-      <h2 class="center">
-        <span class="fs-32" data-home="director.title">{home.director.title}</span><br />
-        <span class="fs-18 tone-soft" data-home="director.name">{home.director.name}</span>
-      </h2>
       <div class="director">
-        <img class="portrait" src={home.director.photo} alt="Lisa Tingle, founder of Seaside Dance Academy" width="240" height="311" data-home-photo="director.photo" />
-        <div>
-          {home.director.paragraphs.map((paragraph, index) => <p class="copy center" data-home={`director.paragraphs.${index}`}>{paragraph}</p>)}
+        <span class="marked-photo">
+          <img class="portrait" src={home.director.photo} alt="Lisa Tingle, founder of Seaside Dance Academy" width="240" height="311" data-home-photo="director.photo" />
+        </span>
+        <div class="director-card">
+          <h2 class="center director-heading">
+            <span class="fs-32" data-home="director.title">{home.director.title}</span><br />
+            <span class="fs-18 tone-soft" data-home="director.name">{home.director.name}</span>
+          </h2>
+          <div class="director-copy">
+            {home.director.paragraphs.map((paragraph, index) => <div class="copy center" data-home={`director.paragraphs.${index}`} set:html={richHtml(paragraph)} />)}
+          </div>
         </div>
       </div>
     </div>
@@ -139,6 +157,7 @@ const photoAlbums = [
       <div class="home-edit-actions">
         <button class="home-edit-save" type="submit">Save</button>
         <button class="home-edit-cancel" type="button" id="home-edit-cancel">Cancel</button>
+        <button class="home-edit-close" type="button">Close</button>
       </div>
     </form>
   </dialog>
@@ -148,7 +167,7 @@ const photoAlbums = [
   const editors = {
     hero: {
       title: 'Top banner',
-      note: 'The banner stays the same size. Slide the photo so faces stay in view. The boxes still go to the same pages.',
+      note: 'The banner stays the same size and the photos play one after another. This edit changes the opening photo. The slideshow edit changes the photos that follow. Slide each photo so faces stay in view. The boxes still go to the same pages.',
       photo: 'hero.image',
       focusKey: 'hero.focus',
       uploadIndex: 3,
@@ -225,7 +244,7 @@ const photoAlbums = [
     },
     slides: {
       title: 'Slideshow',
-      note: 'The frame stays the same size. Change the photos that play here, and describe each one.',
+      note: 'The frame stays the same size. These photos also play in the top banner after the opening photo. Describe each one.',
       slides: true,
       fields: [],
     },
@@ -568,6 +587,31 @@ const photoAlbums = [
       frame.insertBefore(link, before);
     });
     frame.dataset.index = '0';
+    const layer = document.querySelector('[data-hero-slideshow]');
+    const opening = layer?.querySelector('[data-home-photo="hero.image"]');
+    if (layer && opening) {
+      const openingSrc = opening instanceof HTMLImageElement ? new URL(opening.getAttribute('src') || '', location.origin).pathname : '';
+      layer.querySelectorAll('.hero-bg').forEach((node) => {
+        if (node !== opening) node.remove();
+      });
+      slides.forEach((slide) => {
+        const src = String(slide.src || '');
+        if (!src || src === openingSrc) return;
+        const image = document.createElement('img');
+        image.className = 'hero-bg';
+        image.alt = '';
+        image.width = 1100;
+        image.height = 733;
+        image.src = src.startsWith('/images/slides/') ? `${src}?v=${Date.now()}` : src;
+        image.style.objectPosition = slide.focus || 'center 50%';
+        image.dataset.focus = slide.focus || 'center 50%';
+        image.loading = 'lazy';
+        image.decoding = 'async';
+        layer.append(image);
+      });
+      opening.classList.add('is-active');
+      window.dispatchEvent(new Event('hero-slides-changed'));
+    }
   }
 
   function openEditor(id) {
@@ -589,17 +633,22 @@ const photoAlbums = [
       const wrap = document.createElement('label');
       wrap.className = 'home-edit-label';
       wrap.append(document.createTextNode(label));
-      const input = document.createElement(long ? 'textarea' : 'input');
-      input.name = key;
-      input.required = true;
-      input.maxLength = max;
-      input.value = textFor(key);
-      if (input instanceof HTMLTextAreaElement) input.rows = 4;
-      wrap.append(input);
+      if (long && typeof window.studioRichField === 'function') {
+        const node = document.querySelector(`[data-home="${key}"]`);
+        window.studioRichField(wrap, { name: key, max, html: node?.innerHTML || '' });
+      } else {
+        const input = document.createElement(long ? 'textarea' : 'input');
+        input.name = key;
+        input.required = true;
+        input.maxLength = max;
+        input.value = textFor(key);
+        if (input instanceof HTMLTextAreaElement) input.rows = 4;
+        wrap.append(input);
+      }
       fields.append(wrap);
     }
     dialog.showModal();
-    fields.querySelector('input, textarea')?.focus();
+    fields.querySelector('.rich-area, input, textarea')?.focus();
   }
 
   document.querySelectorAll('[data-edit]').forEach((button) => {
@@ -637,6 +686,10 @@ const photoAlbums = [
         const altInput = form.elements.namedItem('photoAlt');
         if (altInput instanceof HTMLTextAreaElement) values[`${editor.photo}.alt`] = altInput.value;
       }
+    }
+    if (form.querySelector('.rich-area[data-over]')) {
+      status.textContent = 'Shorten the paragraph. Formatting is not counted, but the words are.';
+      return;
     }
     for (const [key] of editor.fields) {
       const input = form.elements.namedItem(key);
@@ -678,10 +731,11 @@ const photoAlbums = [
         pendingUpload = null;
       }
       if (editor.slides) paintSlideshow(payload.home?.slides);
-      for (const [key] of editor.fields) {
-        const value = values[key].replace(/\s+/g, ' ').trim();
+      for (const [key, , , long] of editor.fields) {
+        const value = values[key];
         document.querySelectorAll(`[data-home="${key}"]`).forEach((node) => {
-          node.textContent = value;
+          if (long && typeof window.studioPaintRich === 'function') window.studioPaintRich(node, value);
+          else node.textContent = String(value || '').replace(/\s+/g, ' ').trim();
         });
       }
       window.studioSaved(dialog instanceof HTMLDialogElement ? dialog : null);

@@ -5,6 +5,7 @@ import { pages } from '../data/site';
 import { albums, gallery } from '../data/albums';
 import reviews from '../data/reviews.json';
 import reviewsPage from '../data/reviews-page.json';
+import { richHtml } from '../../api/rich-text.js';
 
 const score = Number(reviews.rating).toFixed(1);
 const readReviewsUrl = 'https://www.google.com/maps/place//data=!4m4!3m3!1s0x89b926e93513792b:0xc37ae11f0c25c634!9m1!1b1';
@@ -61,7 +62,7 @@ const photoAlbums = [
         <h2 id="google-reviews-heading" class="center">
           <span class="fs-32" data-reviews="heading">{reviewsPage.heading}</span>
         </h2>
-        <p class="copy center google-reviews-lead" data-reviews="lead">{reviewsPage.lead}</p>
+        <div class="copy center google-reviews-lead" data-reviews="lead" set:html={richHtml(reviewsPage.lead)} />
         <div class="google-reviews-actions">
           <a class="btn" href={readReviewsUrl} target="_blank" rel="noopener noreferrer">
             <span><i class="fa-solid fa-star icon" aria-hidden="true"></i><span data-reviews="readLabel">{reviewsPage.readLabel}</span></span>
@@ -82,6 +83,7 @@ const photoAlbums = [
       <div class="home-edit-actions">
         <button class="home-edit-save" type="button">Save</button>
         <button class="home-edit-cancel" type="button" id="reviews-edit-cancel">Cancel</button>
+        <button class="home-edit-close" type="button">Close</button>
       </div>
     </form>
   </dialog>

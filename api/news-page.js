@@ -9,8 +9,8 @@ const options = {
   label: 'news page',
   text: {
     title: ['Heading', 40],
-    lead: ['First paragraph', 220],
-    account: ['Second paragraph', 160],
+    lead: ['First paragraph', 220, true],
+    account: ['Second paragraph', 160, true],
     button: ['Button', 40],
   },
 };

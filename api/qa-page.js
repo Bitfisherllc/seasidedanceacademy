@@ -9,7 +9,7 @@ const options = {
   label: 'Q & A page',
   text: {
     title: ['Heading', 40],
-    lead: ['Paragraph', 280],
+    lead: ['Paragraph', 280, true],
   },
   list: {
     max: 40,

@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import seed from '../src/data/home.json' with { type: 'json' };
 import { readSession } from './studio-classes.js';
+import { richWords } from './rich-text.js';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const FILE = path.join(ROOT, 'src/data/home.json');
@@ -29,14 +30,14 @@ const FIELDS = {
   'hero.choices.2.note': ['Third box note', 80],
   'welcome.place': ['Small heading', 40],
   'welcome.name': ['Large heading', 48],
-  'welcome.quote': ['Paragraph', 320],
+  'welcome.quote': ['Paragraph', 320, true],
   'welcome.call': ['Call label', 40],
   'studio.title': ['Heading', 40],
   'studio.subtitle': ['Subheading', 60],
-  'studio.paragraphs.0': ['Paragraph 1', 800],
-  'studio.paragraphs.1': ['Paragraph 2', 800],
-  'studio.paragraphs.2': ['Paragraph 3', 800],
-  'studio.paragraphs.3': ['Paragraph 4', 800],
+  'studio.paragraphs.0': ['Paragraph 1', 800, true],
+  'studio.paragraphs.1': ['Paragraph 2', 800, true],
+  'studio.paragraphs.2': ['Paragraph 3', 800, true],
+  'studio.paragraphs.3': ['Paragraph 4', 800, true],
   'studio.facts.0': ['Point 1', 40],
   'studio.facts.1': ['Point 2', 40],
   'studio.facts.2': ['Point 3', 40],
@@ -48,8 +49,8 @@ const FIELDS = {
   'classes.button': ['Button', 32],
   'director.title': ['Heading', 40],
   'director.name': ['Name', 48],
-  'director.paragraphs.0': ['Paragraph 1', 1200],
-  'director.paragraphs.1': ['Paragraph 2', 1200],
+  'director.paragraphs.0': ['Paragraph 1', 1200, true],
+  'director.paragraphs.1': ['Paragraph 2', 1200, true],
 };
 
 function send(res, status, body) {
@@ -127,9 +128,9 @@ function apply(current, values) {
       throw new Error('That part of the page cannot be changed.');
     }
   }
-  for (const [key, [label, max]] of Object.entries(FIELDS)) {
+  for (const [key, [label, max, rich]] of Object.entries(FIELDS)) {
     const value = Object.prototype.hasOwnProperty.call(incoming, key) ? incoming[key] : at(next, key);
-    put(next, key, words(value, label, max));
+    put(next, key, rich ? richWords(value, label, max) : words(value, label, max));
   }
   for (const index of [0, 1]) {
     const srcKey = `bands.${index}.src`;

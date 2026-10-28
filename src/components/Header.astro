@@ -34,7 +34,7 @@ function isCurrent(href: string) {
   <div class="brand">
     <div class="container brand-inner">
       <a class="brand-logo" href="/">
-        <img src="/images/logos/mark.jpeg" alt="" width="66" height="58" />
+        <img src="/images/logos/mark.svg" alt="" width="100" height="88" />
         <span class="brand-name">Seaside Dance Academy</span>
       </a>
       <div class="brand-actions">
@@ -47,7 +47,7 @@ function isCurrent(href: string) {
   <div class="nav-bar">
     <div class="container nav-inner">
       <a class="mobile-brand" href="/">
-        <img src="/images/logos/mark.jpeg" alt="Seaside Dance Academy" width="39" height="34" />
+        <img src="/images/logos/mark.svg" alt="Seaside Dance Academy" width="39" height="34" />
       </a>
       <div class="mobile-actions">
         <a class="btn header-btn" href={`tel:${site.phoneTel}`}><span><i class="fa-solid fa-phone icon" aria-hidden="true"></i>Call</span></a>
@@ -82,6 +82,7 @@ function isCurrent(href: string) {
       View as visitor
     </label>
     <button class="admin-bar-btn" type="button" id="admin-help">How to use admin</button>
+    <a class="admin-bar-btn" href="/studio.html#colors">Colors</a>
     <button class="admin-bar-btn" type="button" id="admin-logout">Log out</button>
   </div>
   <dialog class="admin-help" id="admin-help-dialog">
@@ -91,10 +92,11 @@ function isCurrent(href: string) {
     <h2>How to use admin</h2>
     <ul>
       <li>Red Edit buttons change the words or photo in that spot. The layout stays the same.</li>
+      <li>Paragraph boxes have bold, italic, underline, line breaks, lists, and links. Headings, button labels, quotes, hours, and photo descriptions stay plain text.</li>
       <li>On the home page, Edit on the top banner changes the photo, the season line, and the three boxes. Those boxes still open the same pages.</li>
       <li>Edit on Welcome changes the headings, the paragraph, and the call label. The phone number stays the studio number.</li>
       <li>Edit on The studio changes the headings, the four paragraphs, and the four points under them.</li>
-      <li>Edit on the slideshow changes the photos that play there. Each photo has a description. Edit on each wide photo changes that strip and its description. The frames stay the same size.</li>
+      <li>The top banner plays as a slideshow. Edit on that banner changes the opening photo, the season line, and the three boxes. Edit on the slideshow changes the photos that follow, and those photos also play beside the welcome text. Each photo has a description.</li>
       <li>Edit on the home page classes section changes the heading, the two lines, and the button. Change the class cards on the Classes page.</li>
       <li>Edit on Studio director changes the photo, the heading, the name, and the two paragraphs.</li>
       <li>Each page banner has its own quote. Edit on that banner changes only that quote. Gallery pages share one quote. The home page banner does not use one.</li>
@@ -107,6 +109,7 @@ function isCurrent(href: string) {
       <li>On Directions, Edit changes the banner, the heading, the paragraph, the button label, and the hours. The address, phone, email, and map stay, and Get directions still opens Google Maps.</li>
       <li>On Q &amp; A, Edit changes the banner and the introduction. Add a question, Edit, and Delete change the questions and answers.</li>
       <li>On Contact, Registration, Instagram, and inside a gallery, Edit on the banner changes that page’s quote. A gallery quote appears on every gallery page.</li>
+      <li>Colors on the class desk changes the main site colors. Use Seaside colors puts this original scheme back.</li>
       <li>View as visitor hides the editing buttons and brings the admin button back. This bar stays so you can switch back.</li>
       <li>Log out ends the session on this browser.</li>
       <li>On the live site, a save shows up after the site rebuilds.</li>
@@ -144,11 +147,30 @@ function isCurrent(href: string) {
   });
 
   const siteHeader = document.querySelector('.site-header');
+  let headerStuck = false;
   const markStuck = () => {
-    siteHeader?.classList.toggle('is-stuck', window.scrollY > 12);
+    const y = window.scrollY;
+    headerStuck = headerStuck ? y > 8 : y > 80;
+    siteHeader?.classList.toggle('is-stuck', headerStuck);
   };
   markStuck();
   window.addEventListener('scroll', markStuck, { passive: true });
+
+  const brandLogo = document.querySelector<HTMLElement>('.brand-logo');
+  const homeItem = document.querySelector<HTMLElement>('.desktop-nav li');
+  const alignBrand = () => {
+    if (!brandLogo || !homeItem) return;
+    brandLogo.style.marginLeft = '0px';
+    if (getComputedStyle(homeItem).position !== 'absolute') {
+      brandLogo.style.marginLeft = '';
+      return;
+    }
+    const delta = homeItem.getBoundingClientRect().left - brandLogo.getBoundingClientRect().left;
+    brandLogo.style.marginLeft = `${Math.round(delta)}px`;
+  };
+  alignBrand();
+  window.addEventListener('resize', alignBrand);
+  document.fonts?.ready.then(alignBrand);
 
   const adminBar = document.querySelector<HTMLElement>('.admin-bar');
   const visitorToggle = document.querySelector<HTMLInputElement>('#admin-visitor');

@@ -75,8 +75,8 @@ The dance-school record uses the published name, URL, logo, phone `+1-410-629-03
 | `public/images/logos/logo.png` | Footer | Seaside Dance Academy |
 | `public/images/logos/mark.jpeg` | Mobile header | Seaside Dance Academy |
 | `public/images/logos/mark.jpeg` | Desktop header, beside the name | Empty. The name is already the link text. |
-| `public/images/schedule/class-schedule.png` | Registration | Class schedule. Registration is now open. Classes begin September 14th. |
-| `public/images/schedule/pom-classes.png` | Registration | Junior Pom and Pom and Dance Team Prep are back. |
+| `public/images/schedule/class-schedule.jpg` | Registration | Class schedule. Registration is now open. Classes begin September 14th. |
+| `public/images/schedule/pom-classes.jpg` | Registration | Junior Pom and Pom and Dance Team Prep are back. |
 | `public/images/news/01.jpg` and posts with text | News | The first sentence of the published Facebook text, shortened when it is long |
 | Hero photographs | Page banners | Empty. The banner quote and headings are the text; the photo is a background. |
 
@@ -120,7 +120,7 @@ There are 471 image files under `public/images`, including about 408 under the a
 
 - Album and Instagram photographs still need human descriptions if the studio wants each picture to say more than the album name or the post date.
 - Five album pages include a video file. They do not use `VideoObject` because the project does not have a verified upload date, and a made-up date would be misleading.
-- `public/images/schedule/pom-classes.png` is about 974 KB. It is the only image over 500 KB. It was left as-is so the registration flyer does not change.
+- The registration flyers are JPEGs at the same size as the original pictures. `pom-classes.jpg` is about 225 KB, down from a 974 KB PNG. `class-schedule.jpg` is about 153 KB.
 - Google’s Rich Results Test and PageSpeed Insights were not run. Those tools need the public site, and this work was not deployed.
 - Field Core Web Vitals, crawl stats, and index coverage can only be confirmed after the live site is updated and the sitemap is submitted.
 - The class desk still needs `STUDIO_PASSWORD` and `GITHUB_TOKEN` on the host before a live save works. That was already true and was not changed here.

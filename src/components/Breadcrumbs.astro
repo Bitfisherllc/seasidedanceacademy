@@ -54,6 +54,28 @@ const schema = {
 ---
 
 <nav class="breadcrumbs" aria-label="Breadcrumb">
+  <svg class="crumb-lines" viewBox="0 0 1440 200" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="crumb-line-fade" gradientUnits="userSpaceOnUse" x1="0" y1="200" x2="0" y2="0">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.5"></stop>
+        <stop offset="30%" stop-color="#ffffff" stop-opacity="0.32"></stop>
+        <stop offset="58%" stop-color="#ffffff" stop-opacity="0.16"></stop>
+        <stop offset="82%" stop-color="#ffffff" stop-opacity="0.05"></stop>
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0"></stop>
+      </linearGradient>
+    </defs>
+    <path fill="none" stroke="url(#crumb-line-fade)" stroke-width="1.2" vector-effect="non-scaling-stroke" d="M0 190C240 206 480 174 720 190C960 206 1200 174 1440 190"></path>
+    <path fill="none" stroke="url(#crumb-line-fade)" stroke-width="1.15" vector-effect="non-scaling-stroke" d="M0 174C240 190 480 158 720 174C960 190 1200 158 1440 174"></path>
+    <path fill="none" stroke="url(#crumb-line-fade)" stroke-width="1.1" vector-effect="non-scaling-stroke" d="M0 158C240 174 480 142 720 158C960 174 1200 142 1440 158"></path>
+    <path fill="none" stroke="url(#crumb-line-fade)" stroke-width="1.05" vector-effect="non-scaling-stroke" d="M0 142C240 158 480 126 720 142C960 158 1200 126 1440 142"></path>
+    <path fill="none" stroke="url(#crumb-line-fade)" stroke-width="1.05" vector-effect="non-scaling-stroke" d="M0 126C240 142 480 110 720 126C960 142 1200 110 1440 126"></path>
+    <path fill="none" stroke="url(#crumb-line-fade)" stroke-width="1" vector-effect="non-scaling-stroke" d="M0 110C240 126 480 94 720 110C960 126 1200 94 1440 110"></path>
+    <path fill="none" stroke="url(#crumb-line-fade)" stroke-width="1" vector-effect="non-scaling-stroke" d="M0 94C240 110 480 78 720 94C960 110 1200 78 1440 94"></path>
+    <path fill="none" stroke="url(#crumb-line-fade)" stroke-width="0.95" vector-effect="non-scaling-stroke" d="M0 78C240 94 480 62 720 78C960 94 1200 62 1440 78"></path>
+    <path fill="none" stroke="url(#crumb-line-fade)" stroke-width="0.9" vector-effect="non-scaling-stroke" d="M0 62C240 76 480 48 720 62C960 76 1200 48 1440 62"></path>
+    <path fill="none" stroke="url(#crumb-line-fade)" stroke-width="0.9" vector-effect="non-scaling-stroke" d="M0 46C240 60 480 32 720 46C960 60 1200 32 1440 46"></path>
+    <path fill="none" stroke="url(#crumb-line-fade)" stroke-width="0.85" vector-effect="non-scaling-stroke" d="M0 30C240 42 480 18 720 30C960 42 1200 18 1440 30"></path>
+  </svg>
   <ol>
     {items.map((item, index) => (
       <li>
@@ -72,5 +94,37 @@ const schema = {
       </li>
     ))}
   </ol>
+  <svg class="crumb-wave" viewBox="0 0 1440 640" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <defs>
+      <filter id="crumb-shadow" x="-8%" y="-20%" width="116%" height="900%" color-interpolation-filters="sRGB">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="4 110" result="blur"></feGaussianBlur>
+        <feOffset in="blur" dx="0" dy="10" result="offset"></feOffset>
+        <feFlood style="flood-color: var(--plate)" flood-opacity="0.55" result="flood"></feFlood>
+        <feComposite in="flood" in2="offset" operator="in" result="shadow"></feComposite>
+        <feComposite in="shadow" in2="SourceAlpha" operator="out"></feComposite>
+      </filter>
+      <clipPath id="crumb-green-clip">
+        <path d="M0 0H1440V36C1200 16 960 68 720 40C480 16 240 68 0 36Z"></path>
+      </clipPath>
+      <linearGradient id="crumb-wave-fade" gradientUnits="userSpaceOnUse" x1="0" y1="72" x2="0" y2="0">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.62"></stop>
+        <stop offset="42%" stop-color="#ffffff" stop-opacity="0.32"></stop>
+        <stop offset="74%" stop-color="#ffffff" stop-opacity="0.12"></stop>
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0"></stop>
+      </linearGradient>
+    </defs>
+    <path fill="#ffffff" d="M0 36C240 68 480 16 720 40C960 68 1200 16 1440 36L1440 80L0 80Z"></path>
+    <path filter="url(#crumb-shadow)" fill="var(--green-light)" d="M0 0H1440V36C1200 16 960 68 720 40C480 16 240 68 0 36Z"></path>
+    <g clip-path="url(#crumb-green-clip)" fill="none" stroke="url(#crumb-wave-fade)">
+      <path stroke-width="1.15" vector-effect="non-scaling-stroke" d="M0 32C240 64 480 12 720 36C960 64 1200 12 1440 32"></path>
+      <path stroke-width="1.1" vector-effect="non-scaling-stroke" d="M0 25C240 57 480 5 720 29C960 57 1200 5 1440 25"></path>
+      <path stroke-width="1.05" vector-effect="non-scaling-stroke" d="M0 18C240 50 480 -2 720 22C960 50 1200 -2 1440 18"></path>
+      <path stroke-width="1" vector-effect="non-scaling-stroke" d="M0 11C240 43 480 -9 720 15C960 43 1200 -9 1440 11"></path>
+      <path stroke-width="1" vector-effect="non-scaling-stroke" d="M0 4C240 36 480 -16 720 8C960 36 1200 -16 1440 4"></path>
+      <path stroke-width="0.95" vector-effect="non-scaling-stroke" d="M0 -3C240 29 480 -23 720 1C960 29 1200 -23 1440 -3"></path>
+      <path stroke-width="0.9" vector-effect="non-scaling-stroke" d="M0 -10C240 22 480 -30 720 -6C960 22 1200 -30 1440 -10"></path>
+      <path stroke-width="0.85" vector-effect="non-scaling-stroke" d="M0 -17C240 15 480 -37 720 -13C960 15 1200 -37 1440 -17"></path>
+    </g>
+  </svg>
 </nav>
 <script type="application/ld+json" set:html={JSON.stringify(schema)} />

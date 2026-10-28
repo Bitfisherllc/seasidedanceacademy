@@ -7,6 +7,7 @@ import { site } from '../../../data/site';
 import reviews from '../../../data/reviews.json';
 import qa from '../../../data/qa.json';
 import directions from '../../../data/directions.json';
+import { plainText } from '../../../../api/rich-text.js';
 
 const entries = [
   ...classes.map((item) => ({
@@ -22,10 +23,10 @@ const entries = [
   { href: '/seaside-news.html', title: 'Seaside News', text: newsPosts.map((post) => post.text).join(' '), icon: 'facebook', brand: true },
   { href: '/photos--videos.html', title: 'Photos & Videos', text: albums.map((album) => album.title).join(' '), icon: 'images', brand: false },
   { href: '/reviews.html', title: 'Reviews', text: reviews.reviews.map((review) => review.text).join(' '), icon: 'star', brand: false },
-  { href: '/q-and-a.html', title: 'Q & A', text: qa.items.map((item) => `${item.question} ${item.answer}`).join(' '), icon: 'circle-question', brand: false },
+  { href: '/q-and-a.html', title: 'Q & A', text: qa.items.map((item) => `${item.question} ${plainText(item.answer)}`).join(' '), icon: 'circle-question', brand: false },
   { href: '/photos--videos/instagram.html', title: 'Instagram', text: 'Photos from seasidedanceacademy_', icon: 'instagram', brand: true },
   { href: '/contact.html', title: 'Contact', text: `${site.phoneDisplay} ${site.email} ${site.addressLine}`, icon: 'envelope', brand: false },
-  { href: '/directions.html', title: 'Directions', text: `${site.addressLine}. ${directions.note}`, icon: 'diamond-turn-right', brand: false },
+  { href: '/directions.html', title: 'Directions', text: `${site.addressLine}. ${plainText(directions.note)}`, icon: 'diamond-turn-right', brand: false },
 ];
 ---
 

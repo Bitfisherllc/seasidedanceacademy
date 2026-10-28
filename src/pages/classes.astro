@@ -6,6 +6,7 @@ import { pages, site } from '../data/site';
 import { albums, gallery } from '../data/albums';
 import { classesIn } from '../data/classes';
 import classesPage from '../data/classes-page.json';
+import { plainText, richHtml } from '../../api/rich-text.js';
 
 const grow = classesIn('grow');
 const ballet = classesIn('ballet');
@@ -21,7 +22,7 @@ const classList = {
     item: {
       '@type': 'Service',
       name: item.name,
-      description: [item.ages, item.when, item.tuition, item.summary].filter(Boolean).join('. '),
+      description: [item.ages, item.when, item.tuition, plainText(item.summary)].filter(Boolean).join('. '),
       provider: { '@id': new URL('/#studio', site.url).href },
       areaServed: 'Berlin, Maryland',
     },
@@ -51,7 +52,7 @@ const photoAlbums = [
         <li><i class="fa-solid fa-clipboard-check icon" aria-hidden="true"></i><span data-classes="season">{classesPage.season}</span></li>
         <li><i class="fa-solid fa-calendar-days icon" aria-hidden="true"></i><span data-classes="start">{classesPage.start}</span></li>
       </ul>
-      <p class="note copy"><i class="fa-solid fa-circle-info icon" aria-hidden="true"></i><span data-classes="disclaimer">{classesPage.disclaimer}</span></p>
+      <div class="note copy"><i class="fa-solid fa-circle-info icon" aria-hidden="true"></i><div data-classes="disclaimer" set:html={richHtml(classesPage.disclaimer)} /></div>
       <div class="gallery-tools">
         <button class="gallery-add" type="button" id="class-add">Add a class</button>
       </div>
@@ -68,41 +69,49 @@ const photoAlbums = [
           ))}
         </div>
       )}
-      {ballet.length > 0 && (
-        <>
-          <h2 data-classes="balletTitle">{classesPage.balletTitle}</h2>
-          <p class="copy" data-classes="balletGuide">{classesPage.balletGuide}</p>
-          <div class="class-grid">
-            {ballet.map((item) => (
-              <div class="class-slot">
-                <div class="class-tools">
-                  <button class="gallery-add" type="button" data-class-edit={item.id}>Edit</button>
-                  <button class="gallery-add" type="button" data-class-delete={item.id}>Delete</button>
-                </div>
-                <ClassCard item={item} register />
+    </div>
+  </section>
+  {ballet.length > 0 && (
+    <section class="section class-section">
+      <div class="container">
+        <h2 data-classes="balletTitle">{classesPage.balletTitle}</h2>
+        <div class="copy" data-classes="balletGuide" set:html={richHtml(classesPage.balletGuide)} />
+        <div class="class-grid">
+          {ballet.map((item) => (
+            <div class="class-slot">
+              <div class="class-tools">
+                <button class="gallery-add" type="button" data-class-edit={item.id}>Edit</button>
+                <button class="gallery-add" type="button" data-class-delete={item.id}>Delete</button>
               </div>
-            ))}
-          </div>
-        </>
-      )}
-      {hipHop.length > 0 && (
-        <>
-          <h2 data-classes="hipHopTitle">{classesPage.hipHopTitle}</h2>
-          <p class="copy" data-classes="hipHopGuide">{classesPage.hipHopGuide}</p>
-          <div class="class-grid">
-            {hipHop.map((item) => (
-              <div class="class-slot">
-                <div class="class-tools">
-                  <button class="gallery-add" type="button" data-class-edit={item.id}>Edit</button>
-                  <button class="gallery-add" type="button" data-class-delete={item.id}>Delete</button>
-                </div>
-                <ClassCard item={item} register />
+              <ClassCard item={item} register />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+  {hipHop.length > 0 && (
+    <section class="section class-section">
+      <div class="container">
+        <h2 data-classes="hipHopTitle">{classesPage.hipHopTitle}</h2>
+        <div class="copy" data-classes="hipHopGuide" set:html={richHtml(classesPage.hipHopGuide)} />
+        <div class="class-grid">
+          {hipHop.map((item) => (
+            <div class="class-slot">
+              <div class="class-tools">
+                <button class="gallery-add" type="button" data-class-edit={item.id}>Edit</button>
+                <button class="gallery-add" type="button" data-class-delete={item.id}>Delete</button>
               </div>
-            ))}
-          </div>
-        </>
-      )}
-      {more.length > 0 && (
+              <ClassCard item={item} register />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+  {more.length > 0 && (
+    <section class="section class-section">
+      <div class="container">
         <div class="class-grid">
           {more.map((item) => (
             <div class="class-slot">
@@ -114,9 +123,9 @@ const photoAlbums = [
             </div>
           ))}
         </div>
-      )}
-    </div>
-  </section>
+      </div>
+    </section>
+  )}
   <dialog class="home-edit-dialog" id="classes-edit-dialog">
     <form id="classes-edit-form" onsubmit="event.preventDefault()">
       <h2 id="classes-edit-title">Edit</h2>
@@ -126,6 +135,7 @@ const photoAlbums = [
       <div class="home-edit-actions">
         <button class="home-edit-save" type="button">Save</button>
         <button class="home-edit-cancel" type="button" id="classes-edit-cancel">Cancel</button>
+        <button class="home-edit-close" type="button">Close</button>
       </div>
     </form>
   </dialog>
@@ -189,6 +199,7 @@ const photoAlbums = [
       <div class="home-edit-actions">
         <button class="home-edit-save" type="button" id="class-save">Save</button>
         <button class="home-edit-cancel" type="button" id="class-dialog-cancel">Cancel</button>
+        <button class="home-edit-close" type="button">Close</button>
       </div>
     </form>
   </dialog>
@@ -200,6 +211,9 @@ const photoAlbums = [
 </script>
 <script>
   import { mountPageEditor } from '../scripts/page-editor.js';
+  import { upgradeTextarea } from '../scripts/rich-text.js';
+
+  upgradeTextarea(document.querySelector('#class-summary'));
 
   const classDialog = document.querySelector<HTMLDialogElement>('#class-dialog');
   const classForm = document.querySelector<HTMLFormElement>('#class-form');
@@ -276,6 +290,8 @@ const photoAlbums = [
     } else {
       setSessions([]);
     }
+    const summary = classField('summary');
+    if (summary instanceof HTMLTextAreaElement) summary.dispatchEvent(new Event('rich-sync'));
     classDialog.showModal();
   }
 

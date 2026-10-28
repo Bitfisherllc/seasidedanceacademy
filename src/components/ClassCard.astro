@@ -1,5 +1,6 @@
 ---
 import type { DanceClass } from '../data/classes';
+import { richHtml } from '../../api/rich-text.js';
 
 interface Props {
   item: DanceClass;
@@ -8,6 +9,8 @@ interface Props {
 }
 
 const { item, link = false, register = false } = Astro.props;
+const summaryHtml = richHtml(item.summary);
+const summary = link ? summaryHtml.replace(/<a href="[^"]*">([\s\S]*?)<\/a>/g, '$1') : summaryHtml;
 const Tag = link ? 'a' : 'article';
 const facts = [
   { icon: 'child', text: item.ages },
@@ -25,7 +28,7 @@ const facts = [
       <li><i class={`fa-solid fa-${fact.icon} icon`} aria-hidden="true"></i>{fact.text}</li>
     ))}
   </ul>
-  <p class="copy">{item.summary}</p>
+  <div class="copy" set:html={summary} />
   {item.recital && <p class="copy recital-note"><i class="fa-solid fa-music icon" aria-hidden="true"></i>{item.recital}</p>}
   {register && (
     <a class="btn class-register" href={`/registration.html?class=${item.id}#registration-form`}>

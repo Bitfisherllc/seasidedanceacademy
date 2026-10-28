@@ -4,6 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import seed from '../src/data/directions.json' with { type: 'json' };
 import { readSession } from './studio-classes.js';
+import { richWords } from './rich-text.js';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const FILE = path.join(ROOT, 'src/data/directions.json');
@@ -12,7 +13,7 @@ const REPO = process.env.GITHUB_REPO || 'Bitfisherllc/seasidedanceacademy';
 const BRANCH = process.env.GITHUB_BRANCH || 'main';
 const TEXT = {
   title: ['Heading', 40],
-  note: ['Paragraph', 320],
+  note: ['Paragraph', 320, true],
   button: ['Button', 40],
   hours: ['Hours', 80],
 };
@@ -73,9 +74,9 @@ function apply(current, body) {
       throw new Error('That part of the page cannot be changed.');
     }
   }
-  for (const [key, [label, max]] of Object.entries(TEXT)) {
+  for (const [key, [label, max, rich]] of Object.entries(TEXT)) {
     if (!Object.prototype.hasOwnProperty.call(incoming, key)) continue;
-    next[key] = words(incoming[key], label, max);
+    next[key] = rich ? richWords(incoming[key], label, max) : words(incoming[key], label, max);
     changed = true;
   }
   if (Object.prototype.hasOwnProperty.call(incoming, 'banner.src') || Object.prototype.hasOwnProperty.call(incoming, 'banner.focus')) {

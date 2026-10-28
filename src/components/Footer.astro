@@ -1,13 +1,5 @@
 ---
-import { nav, site } from '../data/site';
-
-const labels: Record<string, string> = {
-  '/seaside-news.html': 'Seaside News',
-  '/photos--videos.html': 'Photos & Videos',
-};
-const pages = nav
-  .filter((item) => item.href !== '/')
-  .map((item) => ({ ...item, label: labels[item.href] || item.label }));
+import { site } from '../data/site';
 ---
 
 <footer class="site-footer">
@@ -50,36 +42,12 @@ const pages = nav
           </a>
         </p>
         <p>
-          <a href={`mailto:${site.email}`}>
-            <i class="fa-solid fa-envelope icon" aria-hidden="true"></i>{site.email}
+          <a href="/contact.html">
+            <i class="fa-solid fa-envelope icon" aria-hidden="true"></i>Contact Us
           </a>
         </p>
-        <p class="footer-note">
-          <i class="fa-solid fa-clock icon" aria-hidden="true"></i>Desk staff during operation hours
-        </p>
       </div>
-      <nav class="footer-block" aria-label="Pages">
-        <p class="footer-label">Pages</p>
-        <ul>
-          {pages.map((item) => (
-            <li>
-              <a href={item.href}>
-                <i class={`${item.brand ? 'fa-brands' : 'fa-solid'} fa-${item.icon} icon`} aria-hidden="true"></i>{item.label}
-              </a>
-            </li>
-          ))}
-          <li>
-            <a href="/directions.html">
-              <i class="fa-solid fa-diamond-turn-right icon" aria-hidden="true"></i>Directions
-            </a>
-          </li>
-          <li>
-            <a href="/studio.html">
-              <i class="fa-solid fa-lock icon" aria-hidden="true"></i>Class desk
-            </a>
-          </li>
-        </ul>
-      </nav>
+      <img class="footer-mark" src="/images/logos/mark-white.svg" alt="" width="168" height="147" />
     </div>
   </div>
 </footer>

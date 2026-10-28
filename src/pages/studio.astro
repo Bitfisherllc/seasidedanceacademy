@@ -25,6 +25,18 @@ import Base from '../layouts/Base.astro';
 
       <div id="studio-app" hidden>
         <p class="note copy" id="studio-live" hidden><i class="fa-solid fa-circle-info icon" aria-hidden="true"></i>A save updates the live site after it rebuilds, usually about a minute.</p>
+        <section class="color-desk" id="colors">
+          <h2>Colors</h2>
+          <p class="copy">These are the main colors on the site. Seaside colors is the original scheme, and it can be put back at any time.</p>
+          <form id="color-form">
+            <div class="color-grid" id="color-grid"></div>
+            <div class="studio-actions">
+              <button class="btn" type="submit"><span><i class="fa-solid fa-palette icon" aria-hidden="true"></i>Save colors</span></button>
+              <button class="studio-text" type="button" id="color-restore">Use Seaside colors</button>
+            </div>
+          </form>
+          <p class="form-status" id="color-status" role="status"></p>
+        </section>
         <p class="form-status" id="studio-status" role="status"></p>
         <form class="contact-form studio-editor" id="studio-editor">
           <h2 id="studio-editor-title">Add a class</h2>
@@ -89,6 +101,9 @@ import Base from '../layouts/Base.astro';
 
 <script>
   import { formatRange } from '../data/class-time.js';
+  import { upgradeTextarea } from '../scripts/rich-text.js';
+
+  upgradeTextarea(document.querySelector('#class-summary'));
 
   const loginForm = document.querySelector<HTMLFormElement>('#studio-login');
   const loginStatus = document.querySelector<HTMLElement>('#studio-login-status');
@@ -187,6 +202,8 @@ import Base from '../layouts/Base.astro';
     if (editorTitle) editorTitle.textContent = 'Add a class';
     if (saveLabel) saveLabel.innerHTML = '<i class="fa-solid fa-plus icon" aria-hidden="true"></i>Add class';
     if (cancelButton) cancelButton.hidden = true;
+    const summary = field('summary');
+    if (summary instanceof HTMLTextAreaElement) summary.dispatchEvent(new Event('rich-sync'));
   }
 
   function render() {
@@ -280,6 +297,8 @@ import Base from '../layouts/Base.astro';
     if (liveNote) liveNote.hidden = !data.live;
     clearEditor();
     render();
+    await loadColors();
+    if (location.hash === '#colors') document.getElementById('colors')?.scrollIntoView();
   }
 
   loginForm?.addEventListener('submit', async (event) => {
@@ -373,6 +392,7 @@ import Base from '../layouts/Base.astro';
       if (field('amount')) field('amount')!.value = item.amount || '';
       if (field('billing')) field('billing')!.value = item.billing || 'month';
       if (field('summary')) field('summary')!.value = item.summary;
+      if (field('summary') instanceof HTMLTextAreaElement) field('summary').dispatchEvent(new Event('rich-sync'));
       if (field('recital')) field('recital')!.value = item.recital || '';
       if (field('group')) field('group')!.value = item.group;
       const featured = field('featured') as HTMLInputElement | null;
@@ -406,4 +426,92 @@ import Base from '../layouts/Base.astro';
   });
 
   openDesk();
+
+  const colorForm = document.querySelector<HTMLFormElement>('#color-form');
+  const colorGrid = document.querySelector<HTMLElement>('#color-grid');
+  const colorStatus = document.querySelector<HTMLElement>('#color-status');
+  const colorRestore = document.querySelector<HTMLButtonElement>('#color-restore');
+  let colorFields: { key: string; css: string; label: string; note: string }[] = [];
+  let colorDefaults: Record<string, string> = {};
+
+  function paintColorFields(colors: Record<string, string>) {
+    if (!colorGrid) return;
+    colorGrid.replaceChildren();
+    for (const field of colorFields) {
+      const label = document.createElement('label');
+      label.className = 'color-field';
+      const input = document.createElement('input');
+      input.type = 'color';
+      input.name = field.key;
+      input.value = colors[field.key] || '#000000';
+      input.setAttribute('aria-label', field.label);
+      const copy = document.createElement('span');
+      const title = document.createElement('strong');
+      title.textContent = field.label;
+      const note = document.createElement('span');
+      note.textContent = field.note;
+      copy.append(title, note);
+      label.append(input, copy);
+      input.addEventListener('input', () => {
+        document.documentElement.style.setProperty(field.css, input.value);
+      });
+      colorGrid.append(label);
+    }
+  }
+
+  function currentColorValues() {
+    const colors: Record<string, string> = {};
+    colorForm?.querySelectorAll<HTMLInputElement>('input[type="color"]').forEach((input) => {
+      colors[input.name] = input.value;
+    });
+    return colors;
+  }
+
+  async function loadColors() {
+    const response = await fetch('/api/colors');
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) return;
+    colorFields = data.fields || [];
+    colorDefaults = data.defaults || {};
+    paintColorFields(data.colors || {});
+  }
+
+  async function saveColors(colors: Record<string, string>, restore = false) {
+    if (colorStatus) colorStatus.textContent = '';
+    const response = await fetch('/api/colors', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(restore ? { restore: true } : { colors }),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || 'The colors could not save.');
+    paintColorFields(data.colors || colors);
+    const saved = data.colors || colors;
+    for (const field of colorFields) {
+      if (saved[field.key]) document.documentElement.style.setProperty(field.css, saved[field.key]);
+    }
+    if (typeof window.studioSaved === 'function') window.studioSaved();
+  }
+
+  colorForm?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    try {
+      await saveColors(currentColorValues());
+    } catch (error) {
+      if (colorStatus) colorStatus.textContent = error instanceof Error ? error.message : 'The colors could not save.';
+    }
+  });
+
+  colorRestore?.addEventListener('click', async () => {
+    paintColorFields(colorDefaults);
+    for (const field of colorFields) {
+      const value = colorDefaults[field.key];
+      if (value) document.documentElement.style.setProperty(field.css, value);
+    }
+    try {
+      await saveColors(colorDefaults, true);
+    } catch (error) {
+      if (colorStatus) colorStatus.textContent = error instanceof Error ? error.message : 'The Seaside colors could not be restored.';
+    }
+  });
 </script>

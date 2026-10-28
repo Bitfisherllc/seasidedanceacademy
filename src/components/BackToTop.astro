@@ -1,6 +1,6 @@
 <button class="to-top" type="button" aria-label="Back to top" hidden>
   <svg class="to-top-icon" viewBox="0 0 24 24" aria-hidden="true">
-    <path d="M12 4.2 4.8 11.4l1.4 1.4L11 8.1V20h2V8.1l4.8 4.7 1.4-1.4L12 4.2Z" />
+    <path d="M12 5.2 5.1 12.1l1.7 1.7L11 9.6V19h2V9.6l4.2 4.2 1.7-1.7L12 5.2Z" />
   </svg>
 </button>
 
@@ -13,7 +13,8 @@
     update();
     window.addEventListener('scroll', update, { passive: true });
     button.addEventListener('click', () => {
-      window.scrollTo({ top: 0 });
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
     });
   }
 </script>
